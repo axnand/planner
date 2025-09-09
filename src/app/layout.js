@@ -1,15 +1,11 @@
-import { Geist, Geist_Mono } from "next/font/google";
+// src/app/layout.js
+import { Montserrat } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/Providers";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Create Next App",
@@ -18,11 +14,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+     <html lang="en" suppressHydrationWarning>
+      <body className={montserrat.className}>
+         <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar/>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
