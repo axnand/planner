@@ -1,3 +1,4 @@
+import CTASection from "@/components/CTASection";
 import FeatureSection from "@/components/FeatureSection";
 import HeroSection from "@/components/HeroSection";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -10,6 +11,7 @@ export default function Home() {
     <>
     <HeroSection/>
     <FeatureSection/>
+    <CTASection/>
     </>
   );
 }
