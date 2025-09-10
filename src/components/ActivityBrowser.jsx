@@ -1,15 +1,15 @@
-import { useState, useMemo } from "react";
-import { Search, Filter, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import ActivityCard from "@/components/ActivityCard";
-import { activities } from "@/data/activities";
+import { useState, useMemo } from "react"
+import { Search, Filter, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
+import ActivityCard from "@/components/ActivityCard"
+import { activities } from "@/data/activities"
 
-const ActivityBrowser = ({ onAddActivity, onClose, theme }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedActivity, setSelectedActivity] = useState(null);
+const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturday", "sunday"] }) => {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedActivity, setSelectedActivity] = useState(null)
 
   const categories = [
     { value: "all", label: "All" },
@@ -21,27 +21,31 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme }) => {
     { value: "creative", label: "Creative" },
     { value: "fitness", label: "Fitness" },
     { value: "entertainment", label: "Entertainment" },
-  ];
+  ]
 
   const filteredActivities = useMemo(() => {
     return activities.filter((activity) => {
       const matchesSearch =
         activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+        activity.description.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesCategory =
-        selectedCategory === "all" || activity.category === selectedCategory;
-      const matchesTheme = activity.themes.includes(theme);
+        selectedCategory === "all" || activity.category === selectedCategory
+      const matchesTheme = activity.themes.includes(theme)
 
-      return matchesSearch && matchesCategory && matchesTheme;
-    });
-  }, [searchQuery, selectedCategory, theme]);
+      return matchesSearch && matchesCategory && matchesTheme
+    })
+  }, [searchQuery, selectedCategory, theme])
 
   const handleAddActivity = (day, timeSlot) => {
     if (selectedActivity) {
-      onAddActivity(selectedActivity, day, timeSlot);
-      setSelectedActivity(null);
+      onAddActivity(selectedActivity, day, timeSlot)
+      setSelectedActivity(null)
     }
-  };
+  }
+
+  const getDayLabel = (day) => {
+    return day.charAt(0).toUpperCase() + day.slice(1)
+  }
 
   return (
     <div className="space-y-6">
@@ -123,60 +127,35 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme }) => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h4 className="mb-2 font-medium text-card-foreground">Saturday</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("saturday", "morning")}
-                  >
-                    Morning
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("saturday", "afternoon")}
-                  >
-                    Afternoon
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("saturday", "evening")}
-                  >
-                    Evening
-                  </Button>
+            <div className="space-y-4 max-h-64 overflow-y-auto">
+              {activeDays.map((day) => (
+                <div key={day}>
+                  <h4 className="mb-2 font-medium text-card-foreground">{getDayLabel(day)}</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAddActivity(day, "morning")}
+                    >
+                      Morning
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAddActivity(day, "afternoon")}
+                    >
+                      Afternoon
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAddActivity(day, "evening")}
+                    >
+                      Evening
+                    </Button>
+                  </div>
                 </div>
-              </div>
-
-              <div>
-                <h4 className="mb-2 font-medium text-card-foreground">Sunday</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("sunday", "morning")}
-                  >
-                    Morning
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("sunday", "afternoon")}
-                  >
-                    Afternoon
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddActivity("sunday", "evening")}
-                  >
-                    Evening
-                  </Button>
-                </div>
-              </div>
+              ))}
             </div>
 
             <div className="mt-6 flex justify-end">
@@ -188,7 +167,7 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ActivityBrowser;
+export default ActivityBrowser
