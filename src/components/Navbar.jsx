@@ -27,7 +27,7 @@ export default function WeekendlyNavbar() {
   const [themeType, setThemeType] = React.useState("Lazy Weekend")
 
   return (
-    <nav className="w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-md fixed z-50 py-2 px-8">
+    <nav className="w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-md fixed z-50 py-2 px-10">
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}

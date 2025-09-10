@@ -55,7 +55,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
             variant="outline"
             size="sm"
             onClick={() => setPreset("weekend")}
-            className="text-xs"
+            className="text-xs rounded-3xl"
           >
             Standard Weekend
           </Button>
@@ -63,7 +63,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
             variant="outline"
             size="sm"
             onClick={() => setPreset("extended")}
-            className="text-xs"
+            className="text-xs rounded-3xl"
           >
             Long Weekend
           </Button>
@@ -71,7 +71,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
             variant="outline"
             size="sm"
             onClick={() => setPreset("clear")}
-            className="text-xs"
+            className="text-xs rounded-3xl"
           >
             Clear All
           </Button>

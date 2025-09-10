@@ -87,13 +87,6 @@ const ScheduleBuilder = ({
         </p>
       </div>
 
-      {/* Save Planner Button */}
-      <div className="flex justify-end">
-        <Button variant="primary" onClick={onSavePlanner}>
-          <Save className="h-4 w-4 mr-2" />
-          Save Planner
-        </Button>
-      </div>
 
       {/* Schedule Grid */}
       <DragDropContext onDragEnd={onDragEnd}>
@@ -224,7 +217,7 @@ const ScheduleBuilder = ({
 
       {/* Empty State */}
       {scheduleItems.length === 0 && (
-        <Card className="p-12 text-center border-card-border bg-surface">
+        <Card className="p-12 text-center border-card-border bg-surface flex flex-col w-full justify-center items-center">
           <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-medium text-card-foreground">
             Your weekend schedule is empty
@@ -232,10 +225,17 @@ const ScheduleBuilder = ({
           <p className="mb-6 text-muted-foreground">
             Start by adding activities to create your perfect weekend plan
           </p>
-          <Button onClick={onAddActivity} variant="default">
+          <div className="w-full ">
+          <Button
+            onClick={onAddActivity}
+            variant="default"
+            className="self-start cursor-pointer"
+            >
             <Plus className="h-4 w-4 mr-2" />
             Add Your First Activity
-          </Button>
+            </Button>
+            </div>
+
         </Card>
       )}
 

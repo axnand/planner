@@ -1,8 +1,10 @@
 'use client'
 import React, {useState} from 'react';
 import { useTheme } from 'next-themes';
-import { Calendar, CloudLightningIcon, Moon, MoonStar, Sun } from 'lucide-react';
+import { Calendar, Calendar1, CloudLightningIcon, Moon, MoonStar, Sun } from 'lucide-react';
 import ThemeSwitcher from './ThemeSwitcher';
+
+import Link from 'next/link';
 import WeekendPlanner from './WeekendPlanner';
 
 const HeroSection = () => {
@@ -51,14 +53,14 @@ const HeroSection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button
-                onClick={() => setShowPlanner(true)}
-                className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-md"
+                className="px-8 py-4 bg-indigo-600 flex items-center gap-2 cursor-pointer text-white font-semibold rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-md"
               >
-                Start Planning →
+                <Calendar1 className='h-5 w-5'/>
+                <Link href="/weekend-planner">Start Planning</Link>
               </button>
               <button
                 onClick={() => scrollToSection('features')}
-                className="px-8 py-4 font-semibold rounded-full border transition-all duration-200 border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="px-8 py-4 font-semibold rounded-full cursor-pointer border transition-all duration-200 border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 See How It Works
               </button>

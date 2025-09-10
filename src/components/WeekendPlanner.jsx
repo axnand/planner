@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ActivityBrowser from "@/components/ActivityBrowser"
 import ScheduleBuilder from "@/components/ScheduleBuilder"
 import ThemeSelector from "@/components/ThemeSelector"
-// ✅ placeholders for later
 import DaySelector from "@/components/DaySelector"
 import SavePlanDialog from "@/components/SavePlanDialog"
 
@@ -14,7 +14,8 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
   const [currentTheme, setCurrentTheme] = useState(editingPlan?.theme || "lazy")
   const [scheduleItems, setScheduleItems] = useState(editingPlan?.scheduleItems || [])
   const [activeDays, setActiveDays] = useState(editingPlan?.activeDays || ["saturday", "sunday"])
-  const [showActivityBrowser, setShowActivityBrowser] = useState(false)
+  const [showActivityBrowser, setShowActivityBrowser] = useState(false);
+  const router = useRouter();
 
   // Load from localStorage (only if not editing)
   useEffect(() => {
@@ -83,8 +84,8 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
+             <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
               <h1 className="text-xl font-semibold text-foreground">
