@@ -1,41 +1,48 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Plus } from "lucide-react"
+import { ArrowLeft, Plus, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import ActivityBrowser from "@/components/ActivityBrowser"
 import ScheduleBuilder from "@/components/ScheduleBuilder"
 import ThemeSelector from "@/components/ThemeSelector"
+// ✅ placeholders for later
+import DaySelector from "@/components/DaySelector"
+import SavePlanDialog from "@/components/SavePlanDialog"
 
-const WeekendPlanner = ({ onBack }) => {
-  const [currentTheme, setCurrentTheme] = useState("lazy")
-  const [scheduleItems, setScheduleItems] = useState([])
+const WeekendPlanner = ({ onBack, editingPlan }) => {
+  const [currentTheme, setCurrentTheme] = useState(editingPlan?.theme || "lazy")
+  const [scheduleItems, setScheduleItems] = useState(editingPlan?.scheduleItems || [])
+  const [activeDays, setActiveDays] = useState(editingPlan?.activeDays || ["saturday", "sunday"])
   const [showActivityBrowser, setShowActivityBrowser] = useState(false)
 
-  // Load from localStorage
+  // Load from localStorage (only if not editing)
   useEffect(() => {
-    const savedPlan = localStorage.getItem("weekendly-plan")
-    if (savedPlan) {
-      try {
-        const parsed = JSON.parse(savedPlan)
-        setScheduleItems(parsed.scheduleItems || [])
-        setCurrentTheme(parsed.theme || "lazy")
-      } catch (error) {
-        console.error("Failed to load saved plan:", error)
+    if (!editingPlan) {
+      const savedPlan = localStorage.getItem("weekendly-plan")
+      if (savedPlan) {
+        try {
+          const parsed = JSON.parse(savedPlan)
+          setScheduleItems(parsed.scheduleItems || [])
+          setCurrentTheme(parsed.theme || "lazy")
+          setActiveDays(parsed.activeDays || ["saturday", "sunday"])
+        } catch (error) {
+          console.error("Failed to load saved plan:", error)
+        }
       }
     }
-  }, [])
+  }, [editingPlan])
 
-  // Save to localStorage
+  // Save to localStorage on changes
   useEffect(() => {
     const planData = {
       scheduleItems,
       theme: currentTheme,
+      activeDays,
       lastUpdated: Date.now(),
     }
     localStorage.setItem("weekendly-plan", JSON.stringify(planData))
-  }, [scheduleItems, currentTheme])
+  }, [scheduleItems, currentTheme, activeDays])
 
   const getDefaultTime = (slot) => {
     switch (slot) {
@@ -80,12 +87,27 @@ const WeekendPlanner = ({ onBack }) => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Weekend Planner</h1>
-              <p className="text-sm text-muted-foreground">Design your perfect weekend</p>
+              <h1 className="text-xl font-semibold text-foreground">
+                {editingPlan ? `Editing: ${editingPlan.name}` : "Weekend Planner"}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {editingPlan ? "Make changes to your saved plan" : "Design your perfect weekend"}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+            {/* ✅ Save dialog placeholder */}
+            <SavePlanDialog
+              scheduleItems={scheduleItems}
+              theme={currentTheme}
+              activeDays={activeDays}
+            >
+              <Button variant="outline" className="gap-2">
+                <Save className="h-4 w-4" />
+                Save Plan
+              </Button>
+            </SavePlanDialog>
             <Button
               onClick={() => setShowActivityBrowser(true)}
               className="gap-2 shadow-sm"
@@ -98,16 +120,24 @@ const WeekendPlanner = ({ onBack }) => {
       </header>
 
       {/* Main */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-6 py-8 space-y-6">
+        {/* ✅ Active days selector */}
+        <DaySelector
+          activeDays={activeDays}
+          onDaysChange={setActiveDays}
+        />
+
         {showActivityBrowser ? (
           <ActivityBrowser
             onAddActivity={addActivity}
             onClose={() => setShowActivityBrowser(false)}
             theme={currentTheme}
+            activeDays={activeDays}
           />
         ) : (
           <ScheduleBuilder
             scheduleItems={scheduleItems}
+            activeDays={activeDays}
             onUpdateItem={updateScheduleItem}
             onRemoveItem={removeScheduleItem}
             onAddActivity={() => setShowActivityBrowser(true)}
