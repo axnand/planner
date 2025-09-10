@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import PlanVisualization from "@/components/PlanVisualization";
+import PlanVisualization from "@/components/PlanVisualisation";
 import { cn } from "@/lib/utils";
 
 const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {

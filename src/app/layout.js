@@ -1,9 +1,9 @@
-// src/app/layout.js
+
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/Providers";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
+import LayoutWrapper from "@/components/ui/LayoutWrapper";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -13,19 +13,23 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // 👇 hook must be used inside a client component
   return (
-     <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={montserrat.className}>
-         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Navbar/>
-          {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LayoutWrapper>{children}</LayoutWrapper>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+
+
+
+

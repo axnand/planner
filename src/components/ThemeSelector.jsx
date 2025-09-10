@@ -1,6 +1,13 @@
+"use client";
+
 import { Sparkles, Mountain, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 const ThemeSelector = ({ currentTheme, onThemeChange }) => {
@@ -10,48 +17,58 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
       name: "Lazy",
       icon: Sparkles,
       description: "Cozy & relaxed",
-      variant: "lazy",
     },
     {
       id: "adventurous",
       name: "Adventurous",
       icon: Mountain,
       description: "Active & exploring",
-      variant: "adventurous",
     },
     {
       id: "family",
       name: "Family",
       icon: Users,
       description: "Together time",
-      variant: "family",
     },
   ];
 
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-muted-foreground">Theme:</span>
-      {themes.map((theme) => {
-        const Icon = theme.icon;
-        const isActive = currentTheme === theme.id;
+  const activeTheme = themes.find((t) => t.id === currentTheme);
 
-        return (
-          <Button
-            key={theme.id}
-            variant={isActive ? theme.variant : "outline"}
-            size="sm"
-            onClick={() => onThemeChange(theme.id)}
-            className={cn(
-              "gap-2 transition-all duration-200",
-              isActive && "shadow-md"
-            )}
-          >
-            <Icon className="h-3 w-3" />
-            <span className="hidden sm:inline">{theme.name}</span>
-          </Button>
-        );
-      })}
-    </div>
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          {activeTheme ? (
+            <>
+              <activeTheme.icon className="h-4 w-4" />
+              {activeTheme.name}
+            </>
+          ) : (
+            "Theme"
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {themes.map((theme) => {
+          const Icon = theme.icon;
+          const isActive = currentTheme === theme.id;
+
+          return (
+            <DropdownMenuItem
+              key={theme.id}
+              onClick={() => onThemeChange(theme.id)}
+              className={cn(
+                "flex items-center gap-2 cursor-pointer",
+                isActive && "font-semibold text-indigo-600"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {theme.name}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

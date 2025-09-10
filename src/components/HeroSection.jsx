@@ -1,19 +1,17 @@
 'use client'
 import React, {useState} from 'react';
 import { useTheme } from 'next-themes';
-import { Calendar, Calendar1, CloudLightningIcon, Moon, MoonStar, Sun } from 'lucide-react';
+import { Book, BookOpen, Calendar, Calendar1, CloudLightningIcon, Moon, MoonStar, Sun } from 'lucide-react';
 import ThemeSwitcher from './ThemeSwitcher';
 
 import Link from 'next/link';
 import WeekendPlanner from './WeekendPlanner';
+import { Button } from './ui/button';
+import SavedPlansManager from './SavedPlansManager';
 
 const HeroSection = () => {
   const { theme, setTheme } = useTheme();
-  const [showPlanner, setShowPlanner] = useState(false);
 
-  if (showPlanner) {
-    return <WeekendPlanner onBack={() => setShowPlanner(false)} />;
-  }
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -51,19 +49,22 @@ const HeroSection = () => {
             </h2>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start lg:items-center">
               <button
-                className="px-8 py-4 bg-indigo-600 flex items-center gap-2 cursor-pointer text-white font-semibold rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-md"
+                className="px-8 py-3 text-[15px] bg-indigo-600 flex items-center gap-2 cursor-pointer text-white font-medium rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-md"
               >
                 <Calendar1 className='h-5 w-5'/>
                 <Link href="/weekend-planner">Start Planning</Link>
               </button>
-              <button
-                onClick={() => scrollToSection('features')}
-                className="px-8 py-4 font-semibold rounded-full cursor-pointer border transition-all duration-200 border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              <Button 
+                variant="outline" 
+                className={`px-8 py-6 cursor-pointer`}
+
               >
-                See How It Works
-              </button>
+                <Book className="h-4 w-4" />
+                <Link href="/saved">Saved Plans</Link>
+                
+              </Button>
             </div>
 
             {/* Features Preview */}
