@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import ThemeSwitcher from "./ThemeSwitcher"
+import { Upload } from "lucide-react"
 
 const themes = ["Lazy Weekend", "Adventurous", "Family"]
 const savedPlans = [
@@ -26,7 +27,7 @@ export default function WeekendlyNavbar() {
   const [themeType, setThemeType] = React.useState("Lazy Weekend")
 
   return (
-    <nav className="w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-md fixed z-50">
+    <nav className="w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-md fixed z-50 py-2 px-8">
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}
@@ -40,26 +41,6 @@ export default function WeekendlyNavbar() {
           <NavigationMenu>
             <NavigationMenuList className="flex items-center space-x-4">
 
-
-              {/* Browse Activities */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/browse" className="px-2 py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    Browse Activities
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              {/* Share / Export */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/share" className="px-2 py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    Share / Export
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              {/* Theme Selector */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="px-2 py-1 rounded-md hover:bg-indigo-50 dark:hover:bg-zinc-800">
                   🎨 {themeType}
@@ -77,22 +58,27 @@ export default function WeekendlyNavbar() {
                   ))}
                 </NavigationMenuContent>
               </NavigationMenuItem>
-
-              {/* Saved Plans */}
+              {/* Browse Activities */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="px-2 py-1 rounded-md hover:bg-indigo-50 dark:hover:bg-zinc-800">
-                  📂 Saved Plans
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="mt-1 p-2 bg-white dark:bg-zinc-900 rounded-md shadow-lg grid gap-2 w-48">
-                  {savedPlans.map(plan => (
-                    <NavigationMenuLink asChild key={plan.title}>
-                      <Link className="px-2 py-1 rounded-md hover:bg-indigo-100 dark:hover:bg-zinc-800" href={plan.href}>
-                        {plan.title}
-                      </Link>
-                    </NavigationMenuLink>
-                  ))}
-                </NavigationMenuContent>
+                <NavigationMenuLink asChild>
+                  <Link href="/browse" className="px-2 py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    Browse Activities
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
+
+              {/* Share / Export */}
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/share" className="px-2 flex-row gap-2 items-center py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <Upload/><span>Share</span>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              {/* Theme Selector */}
+              
+
 
             </NavigationMenuList>
             <NavigationMenuIndicator />
@@ -100,13 +86,16 @@ export default function WeekendlyNavbar() {
           </NavigationMenu>
 
           {/* Search */}
-          <Input placeholder="Search activities..." className="w-48" />
+          
 
         </div>
 
         {/* Right: Theme Toggle */}
+        <div className="flex gap-4">
+        <Input placeholder="Search activities..." className="w-48" />
         <div className="hidden md:flex">
           <ThemeSwitcher />
+        </div>
         </div>
 
       </div>

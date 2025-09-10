@@ -1,20 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useTheme } from 'next-themes';
+import { Calendar, CloudLightningIcon, Moon, MoonStar, Sun } from 'lucide-react';
+import ThemeSwitcher from './ThemeSwitcher';
 
 const HeroSection = () => {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(darkModeQuery.matches);
-
-    const handleThemeChange = (e) => setIsDark(e.matches);
-    darkModeQuery.addEventListener('change', handleThemeChange);
-    
-    return () => darkModeQuery.removeEventListener('change', handleThemeChange);
-  }, []);
-
-  const toggleTheme = () => setIsDark(!isDark);
+  const { theme, setTheme } = useTheme();
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -23,47 +14,23 @@ const HeroSection = () => {
     }
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
-    <div
-      className={`min-h-screen transition-colors duration-500 ${
-        isDark
-          ? 'bg-zinc-950 text-zinc-100'
-          : 'bg-zinc-50 text-zinc-900'
-      }`}
-    >
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-10">
-        <button
-          onClick={toggleTheme}
-          className={`p-3 rounded-full transition-all duration-300 shadow-sm ${
-            isDark
-              ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100'
-              : 'bg-white hover:bg-zinc-100 text-zinc-900 border border-zinc-200'
-          }`}
-        >
-          {isDark ? '☀️' : '🌙'}
-        </button>
-      </div>
+    <div className=" pt-10 transition-colors duration-500 bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 px-8">
+      
 
       <div className="container mx-auto px-6 py-12 min-h-screen flex items-center">
-        <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+        <div className="grid lg:grid-cols-2 gap-14 items-center w-full">
           
           {/* Left Content */}
           <div className="space-y-8 text-center lg:text-left">
-            {/* Brand */}
-            <div className="flex items-center justify-center lg:justify-start space-x-2">
-              <span className="text-2xl font-bold text-indigo-600">
-                Weekendly
-              </span>
-              <span className="text-2xl">✨</span>
-            </div>
+
 
             {/* Headline */}
-            <h1
-              className={`text-5xl lg:text-6xl font-bold leading-tight ${
-                isDark ? 'text-zinc-100' : 'text-zinc-900'
-              }`}
-            >
+            <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-zinc-900 dark:text-zinc-100">
               Plan Your Perfect
               <span className="block text-indigo-600">
                 Weekend ✨
@@ -71,11 +38,7 @@ const HeroSection = () => {
             </h1>
 
             {/* Subheadline */}
-            <h2
-              className={`text-xl lg:text-2xl font-light leading-relaxed ${
-                isDark ? 'text-zinc-400' : 'text-zinc-600'
-              }`}
-            >
+            <h2 className="text-base lg:text-lg font-medium  leading-relaxed text-zinc-600 dark:text-zinc-400">
               Choose activities, set the vibe, and create a personalized weekend schedule in minutes.
             </h2>
 
@@ -89,33 +52,29 @@ const HeroSection = () => {
               </button>
               <button
                 onClick={() => scrollToSection('features')}
-                className={`px-8 py-4 font-semibold rounded-full border transition-all duration-200 ${
-                  isDark
-                    ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800'
-                    : 'border-zinc-300 text-zinc-700 hover:bg-zinc-100'
-                }`}
+                className="px-8 py-4 font-semibold rounded-full border transition-all duration-200 border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 See How It Works
               </button>
             </div>
 
             {/* Features Preview */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-8 pt-4">
               <div className="flex items-center space-x-2">
-                <span className="text-2xl">🗓️</span>
-                <span className={`text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <span className="text-2xl"><Calendar/></span>
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Easy Scheduling
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl">⚡</span>
-                <span className={`text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <span className="text-2xl"><CloudLightningIcon/></span>
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Drag & Drop
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl">🌙</span>
-                <span className={`text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <span className="text-2xl"><MoonStar/></span>
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Themes & Moods
                 </span>
               </div>
@@ -124,17 +83,11 @@ const HeroSection = () => {
 
           {/* Right Illustration */}
           <div className="relative">
-            <div
-              className={`relative p-8 rounded-3xl ${
-                isDark
-                  ? 'bg-zinc-900 border border-zinc-800'
-                  : 'bg-white border border-zinc-200 shadow-md'
-              }`}
-            >
+            <div className="relative p-8 rounded-3xl bg-white border border-zinc-200 shadow-md dark:bg-zinc-900 dark:border-zinc-800">
               {/* Calendar Mockup */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className={`text-xl font-bold ${isDark ? 'text-zinc-100' : 'text-zinc-900'}`}>
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
                     This Weekend
                   </h3>
                   <div className="flex space-x-2">
@@ -145,20 +98,20 @@ const HeroSection = () => {
                 </div>
 
                 {/* Saturday */}
-                <div className={`p-4 rounded-xl ${isDark ? 'bg-zinc-800' : 'bg-zinc-50'}`}>
-                  <h4 className={`font-semibold mb-3 ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800">
+                  <h4 className="font-semibold mb-3 text-indigo-700 dark:text-indigo-300">
                     Saturday
                   </h4>
                   <div className="space-y-2">
-                    <div className={`flex items-center space-x-3 p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white border border-zinc-200'}`}>
+                    <div className="flex items-center space-x-3 p-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600">
                       <span className="text-lg">☕</span>
-                      <span className={`text-sm ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">
                         Morning Coffee & Brunch
                       </span>
                     </div>
-                    <div className={`flex items-center space-x-3 p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white border border-zinc-200'}`}>
+                    <div className="flex items-center space-x-3 p-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600">
                       <span className="text-lg">🥾</span>
-                      <span className={`text-sm ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">
                         Nature Hiking
                       </span>
                     </div>
@@ -166,20 +119,20 @@ const HeroSection = () => {
                 </div>
 
                 {/* Sunday */}
-                <div className={`p-4 rounded-xl ${isDark ? 'bg-zinc-800' : 'bg-zinc-50'}`}>
-                  <h4 className={`font-semibold mb-3 ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800">
+                  <h4 className="font-semibold mb-3 text-indigo-700 dark:text-indigo-300">
                     Sunday
                   </h4>
                   <div className="space-y-2">
-                    <div className={`flex items-center space-x-3 p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white border border-zinc-200'}`}>
+                    <div className="flex items-center space-x-3 p-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600">
                       <span className="text-lg">🎬</span>
-                      <span className={`text-sm ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">
                         Movie Marathon
                       </span>
                     </div>
-                    <div className={`flex items-center space-x-3 p-2 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-white border border-zinc-200'}`}>
+                    <div className="flex items-center space-x-3 p-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600">
                       <span className="text-lg">🍕</span>
-                      <span className={`text-sm ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">
                         Pizza Night
                       </span>
                     </div>
@@ -201,10 +154,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Demo Sections */}
-      <div id="planner" className="h-20"></div>
-      <div id="features" className="h-20"></div>
     </div>
   );
 };
