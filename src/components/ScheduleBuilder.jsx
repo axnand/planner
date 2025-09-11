@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
-import { Plus, Calendar, Clock, Edit, Trash2, GripVertical, Save } from "lucide-react"
+import { Plus, Calendar, Clock, Edit, Trash2, GripVertical } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -10,19 +10,17 @@ import { cn } from "@/lib/utils"
 
 const ScheduleBuilder = ({ 
   scheduleItems, 
-  activeDays = ["saturday", "sunday"], // ✅ now extendable
+  activeDays = ["saturday", "sunday"],
   onUpdateItem, 
   onRemoveItem, 
   onAddActivity, 
-  onSavePlanner, // ✅ new save hook
+  onAddActivityToSlot,   // ✅ added
   theme 
 }) => {
   const [editingItem, setEditingItem] = useState(null)
   const [isMounted, setIsMounted] = useState(false)
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  useEffect(() => setIsMounted(true), [])
 
   const timeSlots = ["morning", "afternoon", "evening"]
 
@@ -49,15 +47,12 @@ const ScheduleBuilder = ({
 
   const onDragEnd = (result) => {
     if (!result.destination) return
-
     const { source, destination, draggableId } = result
 
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
-    ) {
-      return
-    }
+    ) return
 
     const [destDay, destSlot] = destination.droppableId.split("-")
     onUpdateItem(draggableId, { day: destDay, timeSlot: destSlot })
@@ -68,11 +63,9 @@ const ScheduleBuilder = ({
 
   if (!isMounted) {
     return (
-      <div className="space-y-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground">Your Weekend Schedule</h2>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
+      <div className="space-y-8 text-center">
+        <h2 className="text-2xl font-bold text-foreground">Your Weekend Schedule</h2>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     )
   }
@@ -86,7 +79,6 @@ const ScheduleBuilder = ({
           Drag and drop activities to reorganize your perfect weekend
         </p>
       </div>
-
 
       {/* Schedule Grid */}
       <DragDropContext onDragEnd={onDragEnd}>
@@ -119,7 +111,19 @@ const ScheduleBuilder = ({
                         <h4 className="text-sm font-medium text-muted-foreground">
                           {getTimeSlotLabel(timeSlot)}
                         </h4>
-                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex items-center gap-2">
+                          {onAddActivityToSlot && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => onAddActivityToSlot(day, timeSlot)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        </div>
                       </div>
 
                       <Droppable droppableId={`${day}-${timeSlot}`}>
@@ -217,7 +221,7 @@ const ScheduleBuilder = ({
 
       {/* Empty State */}
       {scheduleItems.length === 0 && (
-        <Card className="p-12 text-center border-card-border bg-surface flex flex-col w-full justify-center items-center">
+        <Card className="p-12 text-center border-card-border bg-surface">
           <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-medium text-card-foreground">
             Your weekend schedule is empty
@@ -225,28 +229,12 @@ const ScheduleBuilder = ({
           <p className="mb-6 text-muted-foreground">
             Start by adding activities to create your perfect weekend plan
           </p>
-          <div className="w-full ">
-          <Button
-            onClick={onAddActivity}
-            variant="default"
-            className="self-start cursor-pointer"
-            >
+          <Button onClick={onAddActivity} variant="default">
             <Plus className="h-4 w-4 mr-2" />
             Add Your First Activity
-            </Button>
-            </div>
-
+          </Button>
         </Card>
       )}
-
-      {/* Placeholder for Recent Activity / Charts / Timeline */}
-      <div className="mt-10">
-        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-        {/* 🔹 You can mount charts / timeline component here later */}
-        <Card className="p-6 border-card-border bg-surface text-center text-muted-foreground">
-          No recent planners saved yet.
-        </Card>
-      </div>
     </div>
   )
 }
