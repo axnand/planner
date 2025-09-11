@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import LayoutWrapper from "@/components/ui/LayoutWrapper";
 import { Toaster } from "@/components/ui/sonner"
+import ServiceWorkerRegister from "@/context/ServiceWorker";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <LayoutWrapper>{children}</LayoutWrapper>
+          <ServiceWorkerRegister />
            <Toaster />
         </ThemeProvider>
       </body>

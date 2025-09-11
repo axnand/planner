@@ -1,18 +1,21 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Calendar, Clock, Edit, Trash2, Eye, BarChart3, List, Plus, ArrowLeft } from "lucide-react";
+import { 
+  Calendar, Clock, Edit, Trash2, Eye, BarChart3, List, Plus, ArrowLeft, Share, Download 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import PlanVisualization from "@/components/PlanVisualisation";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import PlanVisualisation from "@/components/PlanVisualisation";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
   const [savedPlans, setSavedPlans] = useState([]);
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [viewMode, setViewMode] = useState("timeline");
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
 
@@ -68,6 +71,81 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
     return day.charAt(0).toUpperCase() + day.slice(1);
   };
 
+  const copyPlanLink = (planId) => {
+    const url = `${window.location.origin}/plan/${planId}`;
+    navigator.clipboard.writeText(url)
+      .then(() => toast.success("Plan link copied to clipboard!"))
+      .catch(() => toast.error("Failed to copy link"));
+  };
+
+  const exportPlanAsPDF = (plan) => {
+    try {
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      let yPosition = 20;
+
+      // Title
+      pdf.setFontSize(20).setFont("helvetica", "bold");
+      pdf.text(plan.name, pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 20;
+
+      // Description
+      if (plan.description) {
+        pdf.setFontSize(12).setFont("helvetica", "normal");
+        const splitDesc = pdf.splitTextToSize(plan.description, pageWidth - 40);
+        pdf.text(splitDesc, 20, yPosition);
+        yPosition += splitDesc.length * 6 + 10;
+      }
+
+      // Theme + Created At
+      pdf.setFontSize(10);
+      pdf.text(`Theme: ${plan.theme} | Created: ${formatDate(plan.createdAt)}`, 20, yPosition);
+      yPosition += 15;
+
+      // Schedule grouped by day & slot
+      plan.activeDays.forEach(day => {
+        const dayItems = plan.scheduleItems.filter(item => item.day === day);
+        if (dayItems.length > 0) {
+          pdf.setFontSize(14).setFont("helvetica", "bold");
+          pdf.text(getDayLabel(day), 20, yPosition);
+          yPosition += 10;
+
+          ["morning", "afternoon", "evening"].forEach(slot => {
+            const slotItems = dayItems.filter(i => i.timeSlot === slot);
+            if (slotItems.length > 0) {
+              pdf.setFontSize(12).setFont("helvetica", "bold");
+              pdf.text(`${slot[0].toUpperCase() + slot.slice(1)}:`, 30, yPosition);
+              yPosition += 8;
+
+              slotItems.forEach(i => {
+                pdf.setFontSize(10).setFont("helvetica", "normal");
+                pdf.text(`${i.startTime} - ${i.activity.name} (${i.activity.estimatedTime}min)`, 40, yPosition);
+                yPosition += 6;
+
+                if (i.location) {
+                  pdf.text(`📍 ${i.location}`, 45, yPosition);
+                  yPosition += 6;
+                }
+                if (i.notes) {
+                  pdf.text(`💭 ${i.notes}`, 45, yPosition);
+                  yPosition += 6;
+                }
+              });
+              yPosition += 5;
+            }
+          });
+          yPosition += 10;
+        }
+      });
+
+      pdf.save(`${plan.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`);
+      toast.success("PDF exported successfully!");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      toast.error("Failed to export PDF");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -91,9 +169,8 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        {/* Plans Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {savedPlans.map((plan) => (
+          {savedPlans.map(plan => (
             <Card key={plan.id} className="border-card-border bg-surface hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -123,7 +200,7 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                 </div>
 
                 <div className="flex flex-wrap gap-1">
-                  {plan.activeDays.map((day) => (
+                  {plan.activeDays.map(day => (
                     <Badge key={day} variant="outline" className="text-xs">
                       {getDayLabel(day)}
                     </Badge>
@@ -131,6 +208,7 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* View Plan */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="flex-1">
@@ -141,70 +219,59 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>{plan.name}</DialogTitle>
-                        <DialogDescription>
-                          Created on {formatDate(plan.createdAt)}
-                        </DialogDescription>
+                        <DialogDescription>Created on {formatDate(plan.createdAt)}</DialogDescription>
                       </DialogHeader>
-                      
                       <div className="space-y-4">
                         <div className="flex gap-2">
-                          <Button
-                            variant={viewMode === "timeline" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setViewMode("timeline")}
-                          >
-                            <List className="h-4 w-4 mr-1" />
-                            Timeline
+                          <Button variant={viewMode === "timeline" ? "default" : "outline"} size="sm" onClick={() => setViewMode("timeline")}>
+                            <List className="h-4 w-4 mr-1" /> Timeline
                           </Button>
-                          <Button
-                            variant={viewMode === "chart" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setViewMode("chart")}
-                          >
-                            <BarChart3 className="h-4 w-4 mr-1" />
-                            Chart
+                          <Button variant={viewMode === "chart" ? "default" : "outline"} size="sm" onClick={() => setViewMode("chart")}>
+                            <BarChart3 className="h-4 w-4 mr-1" /> Chart
                           </Button>
                         </div>
-                        
-                        <PlanVisualization 
-                          plan={plan} 
-                          viewMode={viewMode}
-                        />
+                        <PlanVisualisation plan={plan} viewMode={viewMode} />
                       </div>
                     </DialogContent>
                   </Dialog>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onEditPlan(plan)}
-                  >
+                  {/* Share */}
+                  <Button variant="outline" size="sm" onClick={() => copyPlanLink(plan.id)} title="Share plan">
+                    <Share className="h-3 w-3" />
+                  </Button>
+
+                  {/* Export PDF */}
+                  <Button variant="outline" size="sm" onClick={() => exportPlanAsPDF(plan)} title="Export as PDF">
+                    <Download className="h-3 w-3" />
+                  </Button>
+
+                  {/* Edit */}
+                  <Button variant="outline" size="sm" onClick={() => onEditPlan(plan)} title="Edit plan">
                     <Edit className="h-3 w-3" />
                   </Button>
 
-                  <Dialog open={showDeleteDialog === plan.id} onOpenChange={(open) => setShowDeleteDialog(open ? plan.id : null)}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                  {/* Delete */}
+                  <AlertDialog open={showDeleteDialog === plan.id} onOpenChange={open => setShowDeleteDialog(open ? plan.id : null)}>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" title="Delete plan">
                         <Trash2 className="h-3 w-3" />
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Delete Plan</DialogTitle>
-                        <DialogDescription>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Plan</AlertDialogTitle>
+                        <AlertDialogDescription>
                           Are you sure you want to delete "{plan.name}"? This action cannot be undone.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setShowDeleteDialog(null)}>
-                          Cancel
-                        </Button>
-                        <Button variant="destructive" onClick={() => deletePlan(plan.id)}>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setShowDeleteDialog(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deletePlan(plan.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                           Delete
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </CardContent>
             </Card>
@@ -214,15 +281,10 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
         {savedPlans.length === 0 && (
           <Card className="p-12 text-center border-card-border bg-surface">
             <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-medium text-card-foreground">
-              No saved plans yet
-            </h3>
-            <p className="mb-6 text-muted-foreground">
-              Create your first weekend plan to get started
-            </p>
+            <h3 className="mb-2 text-lg font-medium text-card-foreground">No saved plans yet</h3>
+            <p className="mb-6 text-muted-foreground">Create your first weekend plan to get started</p>
             <Button onClick={onCreateNew} variant="default">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Your First Plan
+              <Plus className="h-4 w-4 mr-2" /> Create Your First Plan
             </Button>
           </Card>
         )}
