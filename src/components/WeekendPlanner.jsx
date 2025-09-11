@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
   ArrowLeft, Plus, Save, Wand2, MapPin, Image as ImageIcon 
 } from "lucide-react";
@@ -16,21 +16,43 @@ import PosterGenerator from "@/components/PosterGenerator";
 import HolidayBanner from "@/components/HolidayBanner";
 import { generateRandomPlan } from "@/utils/planGenerator";
 
-const WeekendPlanner = ({ onBack, editingPlan }) => {
-  const [currentTheme, setCurrentTheme] = useState(editingPlan?.theme || "lazy");
-  const [scheduleItems, setScheduleItems] = useState(editingPlan?.scheduleItems || []);
-  const [activeDays, setActiveDays] = useState(editingPlan?.activeDays || ["saturday", "sunday"]);
+const WeekendPlanner = ({ onBack }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in edit mode
+  const isEditMode = searchParams.get('mode') === 'edit';
+  const planId = searchParams.get('planId');
+  
+  const [editingPlan, setEditingPlan] = useState(null);
+  const [currentTheme, setCurrentTheme] = useState("lazy");
+  const [scheduleItems, setScheduleItems] = useState([]);
+  const [activeDays, setActiveDays] = useState(["saturday", "sunday"]);
   const [showActivityBrowser, setShowActivityBrowser] = useState(false);
   const [showSmartIntegrations, setShowSmartIntegrations] = useState(false);
   const [showPosterGenerator, setShowPosterGenerator] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
 
-  const router = useRouter();
-
-  // Load from localStorage (only if not editing)
+  // Load editing plan or regular plan
   useEffect(() => {
-    if (!editingPlan) {
+    if (isEditMode && planId) {
+      // Load the plan for editing
+      const editingPlanData = localStorage.getItem("weekendly-editing-plan");
+      if (editingPlanData) {
+        try {
+          const plan = JSON.parse(editingPlanData);
+          setEditingPlan(plan);
+          setScheduleItems(plan.scheduleItems || []);
+          setCurrentTheme(plan.theme || "lazy");
+          setActiveDays(plan.activeDays || ["saturday", "sunday"]);
+          console.log("Loaded editing plan:", plan); // Debug log
+        } catch (error) {
+          console.error("Failed to load editing plan:", error);
+        }
+      }
+    } else {
+      // Load regular draft plan
       const savedPlan = localStorage.getItem("weekendly-plan");
       if (savedPlan) {
         try {
@@ -43,18 +65,20 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
         }
       }
     }
-  }, [editingPlan]);
+  }, [isEditMode, planId]);
 
-  // Save to localStorage on changes
+  // Save to localStorage on changes (only if not editing)
   useEffect(() => {
-    const planData = {
-      scheduleItems,
-      theme: currentTheme,
-      activeDays,
-      lastUpdated: Date.now(),
-    };
-    localStorage.setItem("weekendly-plan", JSON.stringify(planData));
-  }, [scheduleItems, currentTheme, activeDays]);
+    if (!isEditMode) {
+      const planData = {
+        scheduleItems,
+        theme: currentTheme,
+        activeDays,
+        lastUpdated: Date.now(),
+      };
+      localStorage.setItem("weekendly-plan", JSON.stringify(planData));
+    }
+  }, [scheduleItems, currentTheme, activeDays, isEditMode]);
 
   // Geolocation for integrations
   useEffect(() => {
@@ -136,26 +160,39 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
     setScheduleItems(generatedItems);
   };
 
+  const handleBack = () => {
+    if (isEditMode) {
+      // Clean up editing plan from localStorage
+      localStorage.removeItem("weekendly-editing-plan");
+      // Go back to saved plans
+      router.push('/saved');
+    } else {
+      router.back();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background ">
       {/* Holiday Banner */}
-      <div className="px-6 pt-6">
-        <HolidayBanner onPlanLongWeekend={handlePlanLongWeekend} />
-      </div>
+      {!isEditMode && (
+        <div className="px-6 ">
+          <HolidayBanner onPlanLongWeekend={handlePlanLongWeekend} />
+        </div>
+      )}
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
+      <header className="sticky top-0 z-50 border-b border-border bg-[#171717] backdrop-blur-lg pr-7 pl-2 py-2">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <Button variant="ghost" size="icon" onClick={handleBack}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
               <h1 className="text-xl font-semibold text-foreground">
-                {editingPlan ? `Editing: ${editingPlan.name}` : "Weekend Planner"}
+                {isEditMode ? `Editing: ${editingPlan?.name || 'Plan'}` : "Weekend Planner"}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {editingPlan ? "Make changes to your saved plan" : "Design your perfect weekend"}
+                {isEditMode ? "Make changes to your saved plan" : "Design your perfect weekend"}
               </p>
             </div>
           </div>
@@ -163,29 +200,35 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
           <div className="flex items-center gap-3 flex-wrap">
             <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
 
-            <Button variant="outline" onClick={autoGeneratePlan} className="gap-2">
+            <Button variant="outline" onClick={autoGeneratePlan} className="gap-2 cursor-pointer">
               <Wand2 className="h-4 w-4" />
               Auto Generate
             </Button>
 
-            <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2">
+            <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2 cursor-pointer">
               <MapPin className="h-4 w-4" />
               Find Spots
             </Button>
 
-            <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2">
+            <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2 cursor-pointer">
               <ImageIcon className="h-4 w-4" />
               Export Poster
             </Button>
 
-            <SavePlanDialog scheduleItems={scheduleItems} theme={currentTheme} activeDays={activeDays}>
-              <Button variant="outline" className="gap-2">
+            <SavePlanDialog 
+              scheduleItems={scheduleItems} 
+              theme={currentTheme} 
+              activeDays={activeDays}
+              editingPlan={editingPlan}
+              isEditMode={isEditMode}
+            >
+              <Button variant="outline" className="gap-2 cursor-pointer">
                 <Save className="h-4 w-4" />
-                Save Plan
+                {isEditMode ? 'Update Plan' : 'Save Plan'}
               </Button>
             </SavePlanDialog>
 
-            <Button onClick={() => setShowActivityBrowser(true)} className="gap-2 shadow-sm">
+            <Button onClick={() => setShowActivityBrowser(true)} className="gap-2 cursor-pointer shadow-sm">
               <Plus className="h-4 w-4" />
               Add Activity
             </Button>
@@ -194,7 +237,7 @@ const WeekendPlanner = ({ onBack, editingPlan }) => {
       </header>
 
       {/* Main */}
-      <main className="container mx-auto px-6 py-8 space-y-6">
+      <main className="container mx-auto px-10 py-15 space-y-20">
         <DaySelector activeDays={activeDays} onDaysChange={setActiveDays} />
 
         {showActivityBrowser ? (

@@ -29,7 +29,7 @@ const ActivityCard = ({ activity, onSelect, isSelected, theme }) => {
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden border-card-border bg-surface p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-1 cursor-pointer",
+        "group relative overflow-hidden border-card-border bg-[#171717] p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-1 cursor-pointer",
         isSelected && "ring-2 ring-primary shadow-primary",
         getThemeStyles()
       )}

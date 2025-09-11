@@ -3,10 +3,26 @@
 import { useState, useEffect } from "react"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { Plus, Calendar, Clock, Edit, Trash2, GripVertical } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import ThemeSelector from "./ThemeSelector"
+import {
+  ArrowLeft,
+  Save,
+  Wand2,
+  MapPin,
+  Image as ImageIcon,
+  MoreHorizontal,
+} from "lucide-react";
+import SavePlanDialog from "./SavePlanDialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 const ScheduleBuilder = ({ 
   scheduleItems, 
@@ -14,8 +30,14 @@ const ScheduleBuilder = ({
   onUpdateItem, 
   onRemoveItem, 
   onAddActivity, 
-  onAddActivityToSlot,   // ✅ added
-  theme 
+  onAddActivityToSlot,
+  theme,
+  setTheme,                 // ✅ for ThemeSelector
+  autoGeneratePlan,         // ✅ for Auto Generate
+  setShowSmartIntegrations, // ✅ for Find Spots
+  setShowPosterGenerator,   // ✅ for Export Poster
+  editingPlan,              // ✅ for SavePlanDialog
+  isEditMode                // ✅ for SavePlanDialog button label
 }) => {
   const [editingItem, setEditingItem] = useState(null)
   const [isMounted, setIsMounted] = useState(false)
@@ -71,7 +93,7 @@ const ScheduleBuilder = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground mb-2">Your Weekend Schedule</h2>
@@ -79,6 +101,7 @@ const ScheduleBuilder = ({
           Drag and drop activities to reorganize your perfect weekend
         </p>
       </div>
+      
 
       {/* Schedule Grid */}
       <DragDropContext onDragEnd={onDragEnd}>
@@ -93,7 +116,7 @@ const ScheduleBuilder = ({
           )}
         >
           {activeDays.map((day) => (
-            <Card key={day} className="p-6 border-card-border bg-surface">
+            <Card key={day} className="p-6 border-card-border bg-[#171717]">
               <div className="mb-4">
                 <h3 className="text-xl font-semibold text-card-foreground capitalize">
                   {day}
@@ -222,17 +245,19 @@ const ScheduleBuilder = ({
       {/* Empty State */}
       {scheduleItems.length === 0 && (
         <Card className="p-12 text-center border-card-border bg-surface">
-          <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-          <h3 className="mb-2 text-lg font-medium text-card-foreground">
+          <Calendar className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+          <h3 className=" text-lg font-medium text-card-foreground">
             Your weekend schedule is empty
           </h3>
-          <p className="mb-6 text-muted-foreground">
+          <p className="mb-3 -mt-4 text-muted-foreground">
             Start by adding activities to create your perfect weekend plan
           </p>
+          <div className="flex w-full justify-center ">
           <Button onClick={onAddActivity} variant="default">
             <Plus className="h-4 w-4 mr-2" />
             Add Your First Activity
           </Button>
+          </div>
         </Card>
       )}
     </div>

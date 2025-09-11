@@ -31,7 +31,7 @@ export default function WeekendlyNavbar() {
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-indigo-600 flex items-center space-x-1">
+        <Link href="/" className="text-2xl font-bold text-[#9843ed] flex items-center space-x-1">
           <span>Weekendly</span>
           <span>✨</span>
         </Link>

@@ -8,26 +8,54 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-const SavePlanDialog = ({ scheduleItems, theme, activeDays, children }) => {
+const SavePlanDialog = ({ scheduleItems, theme, activeDays,editingPlan = null,
+  isEditMode = false, children }) => {
   const [open, setOpen] = useState(false);
   const [planName, setPlanName] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = () => {
-    if (!planName.trim()) {
-      toast.error("Please enter a plan name");
-      return;
-    }
+  // Validation (applies to both create and edit modes)
+  if (!planName.trim()) {
+    toast.error("Please enter a plan name");
+    return;
+  }
 
-    if (scheduleItems.length === 0) {
-      toast.error("Cannot save an empty plan");
-      return;
-    }
+  if (scheduleItems.length === 0) {
+    toast.error("Cannot save an empty plan");
+    return;
+  }
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
+  try {
+    if (isEditMode && editingPlan) {
+      // UPDATE EXISTING PLAN
+      const updatedPlanData = {
+        id: editingPlan.id, // Keep the original ID
+        name: planName.trim(),
+        theme,
+        scheduleItems,
+        activeDays,
+        createdAt: editingPlan.createdAt, // Keep original creation date
+        updatedAt: Date.now(),
+        description: description.trim() || undefined,
+      };
+
+      const savedPlans = JSON.parse(localStorage.getItem("weekendly-saved-plans") || "[]");
+      const updatedPlans = savedPlans.map(plan => 
+        plan.id === editingPlan.id ? updatedPlanData : plan
+      );
+      
+      localStorage.setItem("weekendly-saved-plans", JSON.stringify(updatedPlans));
+      
+      // Update the editing plan data in temporary storage
+      localStorage.setItem("weekendly-editing-plan", JSON.stringify(updatedPlanData));
+      
+      toast.success(`Plan "${planName}" updated successfully!`);
+    } else {
+      // CREATE NEW PLAN
       const newPlan = {
         id: Date.now().toString(),
         name: planName.trim(),
@@ -41,23 +69,24 @@ const SavePlanDialog = ({ scheduleItems, theme, activeDays, children }) => {
 
       const existing = localStorage.getItem("weekendly-saved-plans");
       const savedPlans = existing ? JSON.parse(existing) : [];
-
       savedPlans.unshift(newPlan);
 
       localStorage.setItem("weekendly-saved-plans", JSON.stringify(savedPlans));
-
       toast.success(`Plan "${planName}" saved successfully!`);
-
-      setPlanName("");
-      setDescription("");
-      setOpen(false);
-    } catch (error) {
-      console.error("Failed to save plan:", error);
-      toast.error("Failed to save plan. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
-  };
+
+    // Reset form state
+    setPlanName("");
+    setDescription("");
+    setOpen(false);
+
+  } catch (error) {
+    console.error("Failed to save plan:", error);
+    toast.error(isEditMode ? "Failed to update plan. Please try again." : "Failed to save plan. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const generateSuggestedName = () => {
     const themeNames = {

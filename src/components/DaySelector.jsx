@@ -40,7 +40,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
   const displayDays = showAllDays ? allDays : allDays.slice(0, 4); // Show Friday–Monday initially
 
   return (
-    <Card className="p-4 border-card-border bg-surface">
+    <Card className="p-4 border-card-border bg-[#171717]">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-card-foreground">

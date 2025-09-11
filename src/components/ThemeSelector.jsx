@@ -41,7 +41,7 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
           {activeTheme ? (
             <>
               <activeTheme.icon className="h-4 w-4" />
-              {activeTheme.name}
+              Theme: {activeTheme.name}
             </>
           ) : (
             "Theme"

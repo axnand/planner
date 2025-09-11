@@ -10,14 +10,17 @@ export default function SavedPlansPage() {
 
   return (
     <SavedPlansManager
-      onBack={() => router.back()} // go back to home
+      onBack={() => router.push('/')}
       onEditPlan={(plan) => {
-        setEditingPlan(plan);
-        router.push('/weekend-planner'); // jump into planner with selected plan
+        // Store the plan in localStorage temporarily for editing
+        localStorage.setItem('weekendly-editing-plan', JSON.stringify(plan));
+        // Navigate to planner with edit mode parameter
+        router.push('/weekend-planner?mode=edit&planId=' + plan.id);
       }}
       onCreateNew={() => {
-        setEditingPlan(null);
-        router.push('/weekend-planner'); // new planner
+        // Clear any existing editing plan
+        localStorage.removeItem('weekendly-editing-plan');
+        router.push('/weekend-planner');
       }}
     />
   );
