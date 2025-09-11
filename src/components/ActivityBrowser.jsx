@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import ActivityCard from "@/components/ActivityCard"
 import { activities } from "@/data/activities"
 
-const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturday", "sunday"] }) => {
+const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturday", "sunday"], selectedSlot }) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedActivity, setSelectedActivity] = useState(null)
@@ -43,6 +43,16 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
     }
   }
 
+  const handleActivitySelect = (activity) => {
+    // If we have a selectedSlot (from plus button inside timeslot), add directly
+    if (selectedSlot) {
+      onAddActivity(activity, selectedSlot.day, selectedSlot.timeSlot)
+      return
+    }
+    // Otherwise, show the modal to select day/time
+    setSelectedActivity(activity)
+  }
+
   const getDayLabel = (day) => {
     return day.charAt(0).toUpperCase() + day.slice(1)
   }
@@ -54,7 +64,10 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
         <div>
           <h2 className="text-2xl font-bold text-foreground">Browse Activities</h2>
           <p className="text-muted-foreground">
-            Discover activities perfect for your {theme} weekend
+            {selectedSlot 
+              ? `Adding activity to ${getDayLabel(selectedSlot.day)} ${selectedSlot.timeSlot}`
+              : `Discover activities perfect for your ${theme} weekend`
+            }
           </p>
         </div>
         <Button variant="ghost" size="icon" onClick={onClose}>
@@ -97,7 +110,7 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
           <ActivityCard
             key={activity.id}
             activity={activity}
-            onSelect={() => setSelectedActivity(activity)}
+            onSelect={() => handleActivitySelect(activity)}
             isSelected={selectedActivity?.id === activity.id}
             theme={theme}
           />
@@ -114,8 +127,8 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
         </Card>
       )}
 
-      {/* Add Activity Modal */}
-      {selectedActivity && (
+      {/* Add Activity Modal - Only show when no selectedSlot (main button was clicked) */}
+      {selectedActivity && !selectedSlot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <Card className="w-full max-w-md p-6 m-4 border-card-border bg-surface shadow-lg">
             <div className="mb-4">

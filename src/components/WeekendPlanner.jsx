@@ -15,6 +15,13 @@ import SmartIntegrations from "@/components/SmartIntegrations";
 import PosterGenerator from "@/components/PosterGenerator";
 import HolidayBanner from "@/components/HolidayBanner";
 import { generateRandomPlan } from "@/utils/planGenerator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
 
 const WeekendPlanner = ({ onBack }) => {
   const router = useRouter();
@@ -242,17 +249,14 @@ const WeekendPlanner = ({ onBack }) => {
 
         {showActivityBrowser ? (
           <ActivityBrowser
-            onAddActivity={(activity) =>
-              selectedSlot
-                ? addActivity(activity, selectedSlot.day, selectedSlot.timeSlot)
-                : addActivity(activity, activeDays[0], "morning")
-            }
+            onAddActivity={addActivity}
             onClose={() => {
               setShowActivityBrowser(false);
               setSelectedSlot(null);
             }}
             theme={currentTheme}
             activeDays={activeDays}
+            selectedSlot={selectedSlot}
           />
         ) : showSmartIntegrations ? (
           <SmartIntegrations
@@ -268,12 +272,6 @@ const WeekendPlanner = ({ onBack }) => {
             theme={currentTheme}
             currentLocation={currentLocation}
           />
-        ) : showPosterGenerator ? (
-          <PosterGenerator
-            scheduleItems={scheduleItems}
-            theme={currentTheme}
-            planName={editingPlan?.name}
-          />
         ) : (
           <ScheduleBuilder
             scheduleItems={scheduleItems}
@@ -286,6 +284,24 @@ const WeekendPlanner = ({ onBack }) => {
           />
         )}
       </main>
+
+      {/* Poster Generator Popup */}
+      {/* Poster Generator Popup */}
+        <Dialog open={showPosterGenerator} onOpenChange={setShowPosterGenerator}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Export Poster</DialogTitle>
+            </DialogHeader>
+            <PosterGenerator
+              scheduleItems={scheduleItems}
+              theme={currentTheme}
+              planName={editingPlan?.name}
+              onClose={() => setShowPosterGenerator(false)}
+              isPopup={true}
+            />
+          </DialogContent>
+        </Dialog>
+
     </div>
   );
 };

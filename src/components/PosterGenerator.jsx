@@ -43,11 +43,12 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
             allElements.forEach(el => {
               const style = el.style;
               // Remove any CSS that might cause issues
-              if (style.background && (style.background.includes('var(') || style.background.includes('lab('))) {
+              const unsupported = ["var(", "lab(", "oklab(", "lch(", "oklch("];
+              if (style.background && unsupported.some(fn => style.background.includes(fn))) {
                 style.background = getThemeColor();
               }
-              if (style.color && (style.color.includes('var(') || style.color.includes('lab('))) {
-                style.color = '#000000';
+              if (style.color && unsupported.some(fn => style.color.includes(fn))) {
+                style.color = "#000000";
               }
             });
           }
@@ -264,14 +265,17 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
           ref={posterRef}
           id="poster-content"
           style={{
-            width: '800px',
-            height: '1200px',
+            all: "unset",
+            display: "block",
+            width: "800px",
+            height: "1200px",
             backgroundColor: getThemeColor(),
-            fontFamily: 'Arial, sans-serif',
-            padding: '60px',
-            boxSizing: 'border-box',
-            position: 'relative',
-            overflow: 'hidden'
+            color: "#000000",
+            fontFamily: "Arial, sans-serif",
+            padding: "60px",
+            boxSizing: "border-box",
+            position: "relative",
+            overflow: "hidden"
           }}
         >
           {/* Header Background */}
