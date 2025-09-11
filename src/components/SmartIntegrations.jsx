@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Calendar, Cloud, Loader2, Utensils } from "lucide-react";
+import { MapPin, Calendar, Cloud, Loader2, Utensils, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,58 +7,80 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) => {
+
+  const [location, setLocation] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [location, setLocation] = useState("");
+  const [activeSource, setActiveSource] = useState(null);
+  const [showApiConfig, setShowApiConfig] = useState(false);
   const [apiKeys, setApiKeys] = useState({
-    googlePlaces: localStorage.getItem("googlePlacesApiKey") || "",
-    openWeather: localStorage.getItem("openWeatherApiKey") || "",
+    googlePlaces: localStorage.getItem("googlePlaces") || "",
+    openWeather: localStorage.getItem("openWeather") || "",
   });
 
+
+
+
   useEffect(() => {
-    if (currentLocation) {
-      fetchWeatherSuggestions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLocation]);
+  if (currentLocation) {
+    fetchWeatherSuggestions();
+  }
+}, [currentLocation]);
+
 
   const fetchRestaurants = async () => {
-  if (!apiKeys.googlePlaces || !location) {
-    toast.error("Please enter your Google Places API key and location");
+  if (!location) {
+    toast.error("Please enter a location");
     return;
   }
 
   setLoading(true);
+  setActiveSource("restaurants");
+
   try {
-    // Call your Next.js API route instead of Google directly
-    const response = await fetch(`/api/places?query=restaurants+in+${location}`);
+    // Call your API route (key handled server-side, not here!)
+    const response = await fetch(
+      `/api/places?query=restaurants+in+${encodeURIComponent(location)}`
+    );
+
     if (!response.ok) {
       throw new Error("Failed to fetch from API route");
     }
+
     const data = await response.json();
 
-    if (data.results) {
+    if (data.results && data.results.length > 0) {
       const restaurantSuggestions = data.results.slice(0, 5).map((place, index) => ({
         id: `restaurant-${index}`,
         name: place.name,
-        description: `${place.types?.join(", ") || "Restaurant"} - ${place.formatted_address}`,
+        description: `${place.types?.join(", ") || "Restaurant"} - ${
+          place.formatted_address || place.vicinity
+        }`,
         category: "food",
         icon: "🍽️",
         estimatedTime: 90,
         source: "restaurants",
-        location: place.formatted_address,
+        location: place.formatted_address || place.vicinity,
         rating: place.rating,
         price: place.price_level ? "$".repeat(place.price_level) : undefined,
+        themes: [theme],
+        isIndoor: true,
+        mood: "happy",
       }));
 
+      // Replace only restaurant suggestions
       setSuggestions((prev) => [
         ...prev.filter((s) => s.source !== "restaurants"),
         ...restaurantSuggestions,
       ]);
+
+      toast.success(`Found ${restaurantSuggestions.length} restaurants!`);
+    } else {
+      toast.error("No restaurants found in this location");
     }
   } catch (error) {
-    console.error(error);
-    toast.error("Failed to fetch restaurants");
+    console.error("Restaurant fetch error:", error);
+    toast.error("Failed to fetch restaurants.");
   } finally {
     setLoading(false);
   }
@@ -66,68 +88,139 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
 
 
   const fetchWeatherSuggestions = async () => {
-    if (!apiKeys.openWeather || !currentLocation) return;
+  if (!currentLocation) {
+    toast.error("Location not available");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation.lat}&lon=${currentLocation.lng}&appid=${apiKeys.openWeather}&units=metric`
-      );
-      const data = await response.json();
+  setLoading(true);
+  setActiveSource("weather");
 
-      if (data.weather) {
-        const weather = data.weather[0];
-        const temp = data.main.temp;
-        const weatherSuggestions = getWeatherBasedSuggestions(weather.main, temp);
+  try {
+    const response = await fetch(
+      `/api/weather?lat=${currentLocation.lat}&lon=${currentLocation.lng}`
+    );
 
-        setSuggestions((prev) => [...prev.filter((s) => s.source !== "weather"), ...weatherSuggestions]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch weather:", error);
+    if (!response.ok) throw new Error("Failed to fetch weather");
+
+    const data = await response.json();
+    if (data.weather) {
+      const weather = data.weather[0];
+      const temp = data.main.temp;
+      const weatherBased = getWeatherBasedSuggestions(weather.main, temp);
+
+      setSuggestions((prev) => [
+        ...prev.filter((s) => s.source !== "weather"),
+        ...weatherBased,
+      ]);
+
+      toast.success("Weather-based ideas loaded!");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to fetch weather ideas");
+    setSuggestions((prev) => prev.filter((s) => s.source !== "weather"));
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getWeatherBasedSuggestions = (weatherMain, temp) => {
     const suggestions = [];
 
-    if (weatherMain === "Clear" && temp > 20) {
+    if (["Clear", "Clouds"].includes(weatherMain) && temp > 20) {
       suggestions.push({
-        id: "weather-outdoor",
+        id: "weather-outdoor-1",
         name: "Outdoor Picnic",
-        description: `Perfect sunny weather (${temp}°C) for outdoor activities`,
+        description: `Perfect weather (${weatherMain}, ${temp}°C) for outdoor activities`,
         category: "outdoor",
         icon: "☀️",
         estimatedTime: 180,
         source: "weather",
         weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: false,
+        mood: "energized"
       });
-    } else if (weatherMain === "Rain") {
+      
       suggestions.push({
-        id: "weather-indoor",
-        name: "Cozy Indoor Activities",
-        description: `Rainy day - perfect for indoor relaxation`,
+        id: "weather-outdoor-2", 
+        name: "Park Walk",
+        description: `Beautiful ${temp}°C weather for a relaxing walk`,
+        category: "outdoor",
+        icon: "🚶",
+        estimatedTime: 60,
+        source: "weather",
+        weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: false,
+        mood: "relaxed"
+      });
+    } else if (["Rain", "Drizzle", "Thunderstorm"].includes(weatherMain)) {
+      suggestions.push({
+        id: "weather-indoor-1",
+        name: "Cozy Cafe Visit",
+        description: `Rainy weather - perfect for a warm cafe`,
         category: "indoor",
-        icon: "☔",
+        icon: "☕",
         estimatedTime: 120,
         source: "weather",
         weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: true,
+        mood: "relaxed"
+      });
+      
+      suggestions.push({
+        id: "weather-indoor-2",
+        name: "Museum Visit",
+        description: `Stay dry and explore local culture`,
+        category: "entertainment",
+        icon: "🏛️",
+        estimatedTime: 150,
+        source: "weather",
+        weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: true,
+        mood: "happy"
       });
     } else if (temp < 10) {
       suggestions.push({
-        id: "weather-warm",
+        id: "weather-warm-1",
         name: "Warm Indoor Activities",
-        description: `Cold weather (${temp}°C) - stay warm indoors`,
+        description: `Cold weather (${temp}°C) - stay cozy inside`,
         category: "wellness",
         icon: "🔥",
         estimatedTime: 90,
         source: "weather",
         weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: true,
+        mood: "relaxed"
+      });
+    } else {
+      suggestions.push({
+        id: "weather-generic",
+        name: "Relaxing Walk",
+        description: `Weather: ${weatherMain}, ${temp}°C. A simple walk works well!`,
+        category: "outdoor",
+        icon: "🚶",
+        estimatedTime: 60,
+        source: "weather",
+        weather: `${weatherMain}, ${temp}°C`,
+        themes: [theme],
+        isIndoor: false,
+        mood: "happy"
       });
     }
 
     return suggestions;
   };
 
-  const fetchEvents = async () => {
+  const fetchEvents = () => {
+    setActiveSource("events");
+    
     const mockEvents = [
       {
         id: "event-1",
@@ -138,6 +231,9 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         estimatedTime: 120,
         source: "events",
         location: "Community Art Center",
+        themes: [theme],
+        isIndoor: true,
+        mood: "happy"
       },
       {
         id: "event-2",
@@ -148,6 +244,9 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         estimatedTime: 90,
         source: "events",
         location: "Town Square",
+        themes: [theme],
+        isIndoor: false,
+        mood: "energized"
       },
       {
         id: "event-3",
@@ -158,24 +257,32 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         estimatedTime: 150,
         source: "events",
         location: "Central Park Amphitheater",
+        themes: [theme],
+        isIndoor: false,
+        mood: "energized"
       },
     ];
-
-    setSuggestions((prev) => [...prev.filter((s) => s.source !== "events"), ...mockEvents]);
-    toast.success("Found local events!");
+    
+    // Replace only event suggestions
+    setSuggestions(prev => [
+      ...prev.filter(s => s.source !== "events"),
+      ...mockEvents
+    ]);
+    
+    toast.success("Local events loaded!");
   };
 
   const handleAddSuggestion = (suggestion) => {
     const activity = {
-      id: `smart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: suggestion.id,
       name: suggestion.name,
       category: suggestion.category,
       description: suggestion.description,
       icon: suggestion.icon,
       estimatedTime: suggestion.estimatedTime,
-      mood: "happy",
-      themes: [theme],
-      isIndoor: suggestion.category === "indoor" || suggestion.source === "restaurants",
+      mood: suggestion.mood || "happy",
+      themes: suggestion.themes || [theme],
+      isIndoor: suggestion.isIndoor,
     };
 
     onAddActivity(activity);
@@ -184,82 +291,103 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
 
   const saveApiKey = (key, value) => {
     localStorage.setItem(key, value);
-    setApiKeys((prev) => ({ ...prev, [key.replace("ApiKey", "")]: value }));
+    setApiKeys(prev => ({ ...prev, [key]: value }));
+    toast.success("API key saved!");
+  };
+
+  const clearSuggestions = () => {
+    setSuggestions([]);
+    setActiveSource(null);
+    toast.success("Suggestions cleared!");
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Find Spots Nearby</h2>
-          <p className="text-muted-foreground">Discover restaurants, events, and weather-based activities</p>
+          <p className="text-muted-foreground">
+            Discover restaurants, events, and weather-based activities
+          </p>
         </div>
-        <Button variant="outline" onClick={onClose}>
-          Close
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={() => setShowApiConfig(!showApiConfig)}>
+            <Settings className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* API Configuration */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            API Configuration
+            Location
           </CardTitle>
-          <CardDescription>Enter your API keys to enable smart suggestions</CardDescription>
+          <CardDescription>Enter your location for restaurant suggestions</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Google Places API Key</label>
-              <Input
-                type="password"
-                value={apiKeys.googlePlaces}
-                onChange={(e) => saveApiKey("googlePlacesApiKey", e.target.value)}
-                placeholder="Enter your Google Places API key"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">OpenWeather API Key</label>
-              <Input
-                type="password"
-                value={apiKeys.openWeather}
-                onChange={(e) => saveApiKey("openWeatherApiKey", e.target.value)}
-                placeholder="Enter your OpenWeather API key"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter your location (e.g., New York, NY)"
-              className="flex-1"
-            />
-          </div>
+        <CardContent>
+          <Input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Enter your location (e.g., New York, NY)"
+            className="w-full"
+          />
         </CardContent>
       </Card>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <Button onClick={fetchRestaurants} disabled={loading || !apiKeys.googlePlaces || !location} className="gap-2">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Utensils className="h-4 w-4" />}
+        <Button 
+          onClick={fetchRestaurants} 
+          disabled={loading} 
+          className="gap-2"
+        >
+          <Utensils className="h-4 w-4" />
           Find Restaurants
         </Button>
-        <Button onClick={fetchEvents} variant="outline" className="gap-2">
+        
+        <Button
+          onClick={fetchEvents}
+          disabled={loading}
+          variant="outline"
+          className="gap-2"
+        >
           <Calendar className="h-4 w-4" />
           Find Events
         </Button>
+        
         <Button
           onClick={fetchWeatherSuggestions}
-          disabled={!apiKeys.openWeather || !currentLocation}
+          disabled={loading}
           variant="outline"
           className="gap-2"
         >
           <Cloud className="h-4 w-4" />
           Weather Ideas
         </Button>
+
+        {suggestions.length > 0 && (
+          <Button onClick={clearSuggestions} variant="destructive" size="sm">
+            Clear All
+          </Button>
+        )}
       </div>
+
+      {/* Active Source Indicator */}
+      {activeSource && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">
+            Showing {activeSource} suggestions
+          </Badge>
+          <span className="text-sm text-muted-foreground">
+            ({suggestions.filter(s => s.source === activeSource).length} items)
+          </span>
+        </div>
+      )}
 
       {/* Suggestions Grid */}
       {suggestions.length > 0 && (
@@ -306,8 +434,14 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
                   </p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">~{suggestion.estimatedTime} min</span>
-                  <Button size="sm" onClick={() => handleAddSuggestion(suggestion)} className="gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    ~{suggestion.estimatedTime} min
+                  </span>
+                  <Button 
+                    size="sm" 
+                    onClick={() => handleAddSuggestion(suggestion)} 
+                    className="gap-1"
+                  >
                     Add to Plan
                   </Button>
                 </div>
@@ -317,17 +451,19 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         </div>
       )}
 
+      {/* Empty State */}
       {suggestions.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No suggestions yet</h3>
-            <p className="text-muted-foreground">
-              Configure your API keys and location, then click the buttons above to discover nearby spots!
-            </p>
-          </CardContent>
-        </Card>
-      )}
+  <Card>
+    <CardContent className="text-center py-8">
+      <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+      <h3 className="text-lg font-medium text-foreground mb-2">No suggestions yet</h3>
+      <p className="text-muted-foreground">
+        Use the buttons above to discover nearby spots!
+      </p>
+    </CardContent>
+  </Card>
+)}
+
     </div>
   );
 };
