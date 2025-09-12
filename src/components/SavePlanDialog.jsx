@@ -111,7 +111,7 @@ const SavePlanDialog = ({ scheduleItems, theme, activeDays,editingPlan = null,
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} className="">
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

@@ -69,10 +69,7 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
       }));
 
       // Replace only restaurant suggestions
-      setSuggestions((prev) => [
-        ...prev.filter((s) => s.source !== "restaurants"),
-        ...restaurantSuggestions,
-      ]);
+      setSuggestions(restaurantSuggestions);
 
       toast.success(`Found ${restaurantSuggestions.length} restaurants!`);
     } else {
@@ -109,10 +106,7 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
       const temp = data.main.temp;
       const weatherBased = getWeatherBasedSuggestions(weather.main, temp);
 
-      setSuggestions((prev) => [
-        ...prev.filter((s) => s.source !== "weather"),
-        ...weatherBased,
-      ]);
+      setSuggestions(weatherBased);
 
       toast.success("Weather-based ideas loaded!");
     }
@@ -264,10 +258,7 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
     ];
     
     // Replace only event suggestions
-    setSuggestions(prev => [
-      ...prev.filter(s => s.source !== "events"),
-      ...mockEvents
-    ]);
+    setSuggestions(mockEvents);
     
     toast.success("Local events loaded!");
   };
@@ -312,9 +303,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => setShowApiConfig(!showApiConfig)}>
-            <Settings className="h-4 w-4" />
-          </Button>
           <Button variant="outline" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -340,42 +328,66 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
       </Card>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <Button 
-          onClick={fetchRestaurants} 
-          disabled={loading} 
-          className="gap-2"
-        >
-          <Utensils className="h-4 w-4" />
-          Find Restaurants
-        </Button>
-        
-        <Button
-          onClick={fetchEvents}
-          disabled={loading}
-          variant="outline"
-          className="gap-2"
-        >
-          <Calendar className="h-4 w-4" />
-          Find Events
-        </Button>
-        
-        <Button
-          onClick={fetchWeatherSuggestions}
-          disabled={loading}
-          variant="outline"
-          className="gap-2"
-        >
-          <Cloud className="h-4 w-4" />
-          Weather Ideas
-        </Button>
+<div className="flex flex-wrap gap-3">
+  {/* Restaurants Button */}
+  <Button 
+    onClick={fetchRestaurants} 
+    disabled={loading}
+    variant={activeSource === "restaurants" ? "default" : "outline"}
+    className={`gap-2 cursor-pointer ${
+      activeSource === "restaurants" ? "bg-white text-black" : ""
+    }`}
+  >
+    {loading && activeSource === "restaurants" ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      <Utensils className="h-4 w-4" />
+    )}
+    {loading && activeSource === "restaurants" ? "Loading..." : "Find Restaurants"}
+  </Button>
+  
+  {/* Events Button */}
+  <Button
+    onClick={fetchEvents}
+    disabled={loading}
+    variant={activeSource === "events" ? "default" : "outline"}
+    className={`gap-2 cursor-pointer ${
+      activeSource === "events" ? "bg-white text-black" : ""
+    }`}
+  >
+    {loading && activeSource === "events" ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      <Calendar className="h-4 w-4" />
+    )}
+    {loading && activeSource === "events" ? "Loading..." : "Find Events"}
+  </Button>
+  
+  {/* Weather Button */}
+  <Button
+    onClick={fetchWeatherSuggestions}
+    disabled={loading}
+    variant={activeSource === "weather" ? "default" : "outline"}
+    className={`gap-2 cursor-pointer ${
+      activeSource === "weather" ? "bg-white text-black" : ""
+    }`}
+  >
+    {loading && activeSource === "weather" ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      <Cloud className="h-4 w-4" />
+    )}
+    {loading && activeSource === "weather" ? "Loading..." : "Weather Ideas"}
+  </Button>
 
-        {suggestions.length > 0 && (
-          <Button onClick={clearSuggestions} variant="destructive" size="sm">
-            Clear All
-          </Button>
-        )}
-      </div>
+  {suggestions.length > 0 && (
+    <Button onClick={clearSuggestions} variant="destructive" size="sm">
+      Clear All
+    </Button>
+  )}
+</div>
+
+
 
       {/* Active Source Indicator */}
       {activeSource && (
