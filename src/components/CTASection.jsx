@@ -10,7 +10,7 @@ export default function CTASection() {
   const router = useRouter();
 
   return (
-    <section className="px-6 py-20">
+    <section className="px-6 sm:py-20 pb-20">
       <div className="mx-auto max-w-5xl text-center">
         <div className="relative rounded-3xl p-12 shadow-2xl bg-white/10 backdrop-blur-md border border-white/20">
   <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-purple-400 to-pink-500 bg-clip-text text-transparent">

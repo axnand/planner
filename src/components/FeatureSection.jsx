@@ -71,7 +71,7 @@ export default function FeatureSection() {
             return (
               <Card
                 key={i}
-                className="group relative overflow-hidden border p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                className="group relative overflow-hidden border sm:p-6  rounded-2xl shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
               >
                 {/* Glow Overlay with theme gradient */}
                 <div

@@ -90,29 +90,34 @@ export default function WeekendlyNavbar() {
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[64px] left-0 w-full bg-white dark:bg-zinc-900 shadow-lg border-t border-zinc-200 dark:border-zinc-800">
-          <div className="flex flex-col p-4 space-y-4">
-            <Link
-              href="/weekend-planner"
-              className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <PlusCircleIcon className="h-4 w-4" />
-              Create New Plan
-            </Link>
-            <Link
-              href="/saved"
-              className="text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Saved Plans
-            </Link>
-            <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-              <ThemeSwitcher />
-            </div>
-          </div>
-        </div>
-      )}
+  <div
+    className="md:hidden absolute left-24 top-[64px] w-64 bg-white dark:bg-zinc-900 shadow-lg border-t border-zinc-200 dark:border-zinc-800 
+      transition-all duration-300 ease-out origin-top transform animate-slideDown"
+  >
+    <div className="flex flex-col p-4 space-y-4">
+      <Link
+        href="/weekend-planner"
+        className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <PlusCircleIcon className="h-4 w-4" />
+        Create New Plan
+      </Link>
+      <Link
+        href="/saved"
+        className="text-zinc-700 flex items-center gap-2 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <Book className="h-4 w-4"/>
+        Saved Plans
+      </Link>
+      <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+        <ThemeSwitcher />
+      </div>
+    </div>
+  </div>
+)}
+
     </nav>
   )
 }
