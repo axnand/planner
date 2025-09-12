@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
   ArrowLeft, Plus, Save, Wand2, MapPin, Image as ImageIcon 
@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/dialog"
 import ThemeSwitcher from "./ThemeSwitcher";
 
-
-const WeekendPlanner = ({ onBack }) => {
+// Separate component that uses useSearchParams
+const WeekendPlannerContent = ({ onBack }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -289,23 +289,64 @@ const WeekendPlanner = ({ onBack }) => {
       </main>
 
       {/* Poster Generator Popup */}
-      {/* Poster Generator Popup */}
-        <Dialog open={showPosterGenerator} onOpenChange={setShowPosterGenerator}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Export Poster</DialogTitle>
-            </DialogHeader>
-            <PosterGenerator
-              scheduleItems={scheduleItems}
-              theme={currentTheme}
-              planName={editingPlan?.name}
-              onClose={() => setShowPosterGenerator(false)}
-              isPopup={true}
-            />
-          </DialogContent>
-        </Dialog>
-
+      <Dialog open={showPosterGenerator} onOpenChange={setShowPosterGenerator}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Export Poster</DialogTitle>
+          </DialogHeader>
+          <PosterGenerator
+            scheduleItems={scheduleItems}
+            theme={currentTheme}
+            planName={editingPlan?.name}
+            onClose={() => setShowPosterGenerator(false)}
+            isPopup={true}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+};
+
+// Loading fallback component
+const WeekendPlannerLoading = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 border-b border-border bg-[#171717] backdrop-blur-lg pr-7 pl-2 py-2">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-4">
+            <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
+            <div>
+              <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-20 bg-gray-200 rounded animate-pulse" />
+            <div className="h-9 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-9 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-9 w-28 bg-gray-200 rounded animate-pulse" />
+            <div className="h-9 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-9 w-32 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+      </header>
+      
+      <main className="container mx-auto px-10 py-15">
+        <div className="space-y-8">
+          <div className="h-12 w-full bg-gray-200 rounded animate-pulse" />
+          <div className="h-96 w-full bg-gray-200 rounded animate-pulse" />
+        </div>
+      </main>
+    </div>
+  );
+};
+
+// Main component with Suspense boundary
+const WeekendPlanner = ({ onBack }) => {
+  return (
+    <Suspense fallback={<WeekendPlannerLoading />}>
+      <WeekendPlannerContent onBack={onBack} />
+    </Suspense>
   );
 };
 
