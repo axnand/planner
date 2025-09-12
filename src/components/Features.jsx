@@ -41,7 +41,7 @@ export default function Features(){
   <div className="mx-auto max-w-7xl">
     {/* Header */}
     <div className="mb-16 text-center space-y-4">
-      <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+      <h2 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
         All-in-One Weekend Planner
       </h2>
       <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

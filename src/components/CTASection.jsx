@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Calendar } from "lucide-react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function CTASection() {
   const [showPlanner, setShowPlanner] = useState(false)
+  const router = useRouter();
 
   return (
     <section className="px-6 py-20">
@@ -20,7 +22,7 @@ export default function CTASection() {
   <div className="flex justify-center">
     <Button
       size="lg"
-      onClick={() => setShowPlanner(true)}
+      onClick={() => router.push("/weekend-planner")}
       className="bg-gradient-to-r cursor-pointer from-fuchsia-500 via-purple-500 to-primary text-white font-semibold px-8 py-4 rounded-full hover:scale-105 transition-transform shadow-lg"
     >
       <Calendar className="mr-2 h-5 w-5" />
