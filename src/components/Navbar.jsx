@@ -31,8 +31,8 @@ export default function WeekendlyNavbar() {
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-indigo-500 flex items-center space-x-1">
-          <span>Weekendly</span>
+        <Link href="/" className="text-2xl font-bold  flex items-center space-x-1">
+          <span className="bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">Weekendly</span>
           <span>✨</span>
         </Link>
 
@@ -45,14 +45,14 @@ export default function WeekendlyNavbar() {
               {/* Share / Export */}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/share" className="px-2 flex-row gap-2 items-center py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                  <Link href="/weekend-planner" className="px-2 font-medium flex-row gap-2 items-center py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300">
                     <PlusCircleIcon/><span>Create New Plan</span>
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/saved" className="px-2 py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                  <Link href="/saved" className="px-2 font-medium py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300">
                     Saved Plans
                   </Link>
                 </NavigationMenuLink>
