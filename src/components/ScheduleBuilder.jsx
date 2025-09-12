@@ -47,13 +47,18 @@ const ScheduleBuilder = ({
   const timeSlots = ["morning", "afternoon", "evening"]
 
   const getThemeColor = () => {
-    switch (theme) {
-      case "lazy": return "bg-gradient-lazy";
-      case "adventurous": return "bg-gradient-adventurous";
-      case "family": return "bg-gradient-family";
-      default: return "bg-gradient-primary";
-    }
-  };
+  switch (theme) {
+    case "lazy":
+      return { gradient: "bg-gradient-to-r from-[#667eea] to-[#764ba2]", light: "from-[#667eea]/10 to-[#764ba2]/10" };
+    case "adventurous":
+      return { gradient: "bg-gradient-to-r from-[#f093fb] to-[#f5576c]", light: "from-[#f093fb]/10 to-[#f5576c]/10" };
+    case "family":
+      return { gradient: "bg-gradient-to-r from-[#4facfe] to-[#00f2fe]", light: "from-[#4facfe]/10 to-[#00f2fe]/10" };
+    default:
+      return { gradient: "bg-gradient-to-r from-[#667eea] to-[#764ba2]", light: "from-[#667eea]/10 to-[#764ba2]/10" };
+  }
+};
+
 
   const getTimeSlotLabel = (timeSlot) => {
     switch (timeSlot) {
@@ -121,7 +126,7 @@ const ScheduleBuilder = ({
                 <h3 className="text-xl font-semibold text-card-foreground capitalize">
                   {day}
                 </h3>
-                <div className={cn("h-1 w-16 rounded-full mt-2", getThemeColor())} />
+                <div className={cn("h-1 w-16 rounded-full mt-2", getThemeColor().gradient)} />
               </div>
 
               <div className="space-y-4">
@@ -139,11 +144,12 @@ const ScheduleBuilder = ({
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className={cn("h-6 w-6 p-0", getThemeColor().gradient)}
                               onClick={() => onAddActivityToSlot(day, timeSlot)}
                             >
-                              <Plus className="h-3 w-3" />
+                              <Plus className="h-3 w-3 text-white" />
                             </Button>
+
                           )}
                           <Clock className="h-4 w-4 text-muted-foreground" />
                         </div>
@@ -157,10 +163,11 @@ const ScheduleBuilder = ({
                             className={cn(
                               "min-h-24 rounded-lg border-2 border-dashed transition-colors",
                               snapshot.isDraggingOver
-                                ? "border-primary bg-primary/10"
-                                : "border-muted bg-muted/20"
+                                ? `${getThemeColor().gradient} bg-opacity-20` // when dragging
+                                : `border-muted bg-gradient-to-r ${getThemeColor().light}` // subtle hint
                             )}
                           >
+
                             {items.length === 0 ? (
                               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
                                 Drop activities here
