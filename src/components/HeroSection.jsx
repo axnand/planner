@@ -6,6 +6,8 @@ import { Button } from './ui/button';
 
 const HeroSection = () => {
 
+  
+
   return (
     <div className="pt-10 transition-colors duration-500 bg-zinc-50 dark:bg-zinc-950 px-8">
       <div className="container mx-auto px-6 py-12 min-h-screen flex items-center">
@@ -130,15 +132,27 @@ const HeroSection = () => {
               </div>
 
               {/* Floating Activity Icons */}
-              <div className="absolute -top-4 -right-4 bg-indigo-600 text-white p-3 rounded-full shadow-md animate-pulse">
+              <div
+                className="absolute -top-4 -right-4 text-white p-3 rounded-full shadow-md animate-pulse"
+                style={{ background: "linear-gradient(135deg, #667eea, #764ba2)" }}
+              >
                 🎨
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-sky-600 text-white p-3 rounded-full shadow-md animate-pulse delay-1000">
+
+              <div
+                className="absolute -bottom-4 -left-4 text-white p-3 rounded-full shadow-md animate-pulse delay-1000"
+                style={{ background: "linear-gradient(135deg, #4facfe, #00f2fe)" }}
+              >
                 🏊‍♀️
               </div>
-              <div className="absolute top-1/2 -left-8 bg-emerald-600 text-white p-2 rounded-full shadow-md animate-bounce">
+
+              <div
+                className="absolute top-1/2 -left-8 text-white p-2 rounded-full shadow-md animate-bounce"
+                style={{ background: "linear-gradient(135deg, #f093fb, #f5576c)" }}
+              >
                 🚴‍♂️
               </div>
+
             </div>
           </div>
 

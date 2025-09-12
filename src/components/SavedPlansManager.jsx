@@ -21,7 +21,21 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
   const [viewMode, setViewMode] = useState("timeline");
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
   const [showExportDialog, setShowExportDialog] = useState(null); 
-  const [showPosterGenerator, setShowPosterGenerator] = useState(null); // stores plan object when open
+  const [showPosterGenerator, setShowPosterGenerator] = useState(null);
+
+  const themeGradients = {
+  lazy: "linear-gradient(135deg, #667eea, #764ba2)",
+  adventurous: "linear-gradient(135deg, #f093fb, #f5576c)",
+  family: "linear-gradient(135deg, #4facfe, #00f2fe)",
+  default: "linear-gradient(135deg, #667eea, #764ba2)",
+};
+
+const themeBadgeVariants = {
+  lazy: "lazy",
+  adventurous: "adventurous",
+  family: "family",
+  default: "default",
+};
 
 
 
@@ -192,7 +206,11 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                     {plan.theme}
                   </Badge>
                 </div>
-                <div className={cn("h-1 w-full rounded-full", getThemeColor(plan.theme))} />
+                <div
+                  className="h-1 w-1/3 rounded-full"
+                  style={{ background: themeGradients[plan.theme] || themeGradients.default }}
+                />
+
               </CardHeader>
               
               <CardContent className="space-y-4">
