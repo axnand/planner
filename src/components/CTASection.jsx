@@ -9,23 +9,27 @@ export default function CTASection() {
 
   return (
     <section className="px-6 py-20">
-      <div className="mx-auto max-w-4xl text-center">
-        <div className="rounded-3xl bg-gradient-to-r from-purple-600 via-blue-600 to-green-600 p-12 text-white shadow-xl">
-          <h2 className="mb-4 text-3xl font-bold">
-            Ready to Transform Your Weekends?
-          </h2>
-          <p className="mb-8 text-lg opacity-90">
-            Join thousands who've discovered the joy of intentional weekend planning
-          </p>
-          <Button
-            size="lg"
-            onClick={() => setShowPlanner(true)}
-            className="bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:text-white transition-colors"
-          >
-            <Calendar className="mr-2 h-5 w-5" />
-            Start Planning Now
-          </Button>
-        </div>
+      <div className="mx-auto max-w-5xl text-center">
+        <div className="relative rounded-3xl p-12 shadow-2xl bg-white/10 backdrop-blur-md border border-white/20">
+  <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-purple-400 to-pink-500 bg-clip-text text-transparent">
+    Plan Smarter, Enjoy Harder
+  </h2>
+  <p className="mb-8 mt-5 text-lg text-gray-100 text-center max-w-2xl mx-auto">
+    Weekendly makes planning simple, fun, and shareable — so you can focus on making memories.
+  </p>
+  <div className="flex justify-center">
+    <Button
+      size="lg"
+      onClick={() => setShowPlanner(true)}
+      className="bg-gradient-to-r cursor-pointer from-fuchsia-500 via-purple-500 to-primary text-white font-semibold px-8 py-4 rounded-full hover:scale-105 transition-transform shadow-lg"
+    >
+      <Calendar className="mr-2 h-5 w-5" />
+      Start Planning Now
+    </Button>
+  </div>
+</div>
+
+
       </div>
     </section>
   )

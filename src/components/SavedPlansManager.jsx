@@ -7,13 +7,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import PlanVisualisation from "@/components/PlanVisualisation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import PosterGenerator from "@/components/PosterGenerator";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
   const [savedPlans, setSavedPlans] = useState([]);
@@ -165,11 +166,13 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
               <p className="text-sm text-muted-foreground">Manage your weekend plans</p>
             </div>
           </div>
-          
+          <div className="flex gap-5 mr-4">
           <Button onClick={onCreateNew} className="gap-2">
             <Plus className="h-4 w-4" />
             New Plan
           </Button>
+          <ThemeSwitcher />
+          </div>
         </div>
       </header>
 
@@ -221,7 +224,10 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                         View
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogPortal>
+                       <DialogOverlay className="bg-black/10 backdrop-blur-xl fixed inset-0" />
+                    <DialogContent className="!w-[60vw] !max-w-[90vw] h-[90vh] overflow-y-auto bg-[#101010]" overlayClassName="bg-background/60 backdrop-blur-md">
+
                       <DialogHeader>
                         <DialogTitle>{plan.name}</DialogTitle>
                         <DialogDescription>Created on {formatDate(plan.createdAt)}</DialogDescription>
@@ -238,6 +244,7 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                         <PlanVisualisation plan={plan} viewMode={viewMode} />
                       </div>
                     </DialogContent>
+                    </DialogPortal>
                   </Dialog>
 
                   {/* Share */}

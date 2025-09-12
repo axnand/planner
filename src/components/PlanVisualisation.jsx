@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const PlanVisualisation = ({ plan, viewMode }) => {
+  const { theme } = useTheme();
+  
   const getThemeColor = (theme) => {
     switch (theme) {
       case "lazy": return "hsl(var(--theme-lazy))";
@@ -26,104 +29,130 @@ const PlanVisualisation = ({ plan, viewMode }) => {
   const getDayLabel = (day) => day.charAt(0).toUpperCase() + day.slice(1);
 
   if (viewMode === "chart") {
-    // Prepare data for charts
-    const activitiesByDay = plan.activeDays.map(day => ({
-      day: getDayLabel(day),
-      activities: plan.scheduleItems.filter(item => item.day === day).length,
-      totalTime: plan.scheduleItems
-        .filter(item => item.day === day)
-        .reduce((sum, item) => sum + item.activity.estimatedTime, 0)
-    }));
+  const activitiesByDay = plan.activeDays.map(day => ({
+    day: getDayLabel(day),
+    activities: plan.scheduleItems.filter(item => item.day === day).length,
+    totalTime: plan.scheduleItems
+      .filter(item => item.day === day)
+      .reduce((sum, item) => sum + item.activity.estimatedTime, 0),
+  }));
 
-    const activitiesByCategory = plan.scheduleItems.reduce((acc, item) => {
-      const category = item.activity.category;
-      acc[category] = (acc[category] || 0) + 1;
-      return acc;
-    }, {});
+  const activitiesByCategory = plan.scheduleItems.reduce((acc, item) => {
+    const category = item.activity.category;
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
 
-    const categoryData = Object.entries(activitiesByCategory).map(([category, count]) => ({
-      category: category.charAt(0).toUpperCase() + category.slice(1),
-      count,
-      fill: getThemeColor(plan.theme)
-    }));
+  const categoryData = Object.entries(activitiesByCategory).map(([category, count]) => ({
+    category: category.charAt(0).toUpperCase() + category.slice(1),
+    count,
+  }));
 
-    const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#8dd1e1"];
+  // High contrast palettes for light/dark mode
+  const COLORS_LIGHT = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#9333ea"];
+  const COLORS_DARK = ["#60a5fa", "#4ade80", "#facc15", "#f87171", "#c084fc"];
 
-    return (
-      <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Activities by Day Chart */}
-          <Card className="border-card-border bg-surface">
-            <CardHeader>
-              <CardTitle className="text-lg">Activities by Day</CardTitle>
-              <CardDescription>Number of activities planned for each day</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={activitiesByDay}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="activities" fill={getThemeColor(plan.theme)} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+  const COLORS = theme === "dark" ? COLORS_DARK : COLORS_LIGHT;
 
-          {/* Activities by Category Chart */}
-          <Card className="border-card-border bg-surface">
-            <CardHeader>
-              <CardTitle className="text-lg">Activity Categories</CardTitle>
-              <CardDescription>Distribution of activities by category</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="count"
-                    label={({ category, count }) => `${category}: ${count}`}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Activities by Day Chart */}
+        <Card className="border-card-border bg-surface dark:bg-neutral-900">
+          <CardHeader>
+            <CardTitle className="text-lg dark:text-white">Activities by Day</CardTitle>
+            <CardDescription className="dark:text-gray-300">
+              Number of activities planned for each day
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={activitiesByDay}>
+                <CartesianGrid strokeDasharray="3 3" stroke={theme === "dark" ? "#444" : "#ccc"} />
+                <XAxis dataKey="day" stroke={theme === "dark" ? "#fff" : "#000"} />
+                <YAxis stroke={theme === "dark" ? "#fff" : "#000"} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: theme === "dark" ? "#1f2937" : "#fff",
+                    color: theme === "dark" ? "#fff" : "#000",
+                  }}
+                />
+                <Bar dataKey="activities" fill={theme === "dark" ? "#60a5fa" : "#2563eb"} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-        {/* Summary Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card className="border-card-border bg-surface p-4">
-            <div className="text-2xl font-bold text-card-foreground">{plan.scheduleItems.length}</div>
-            <div className="text-sm text-muted-foreground">Total Activities</div>
-          </Card>
-          <Card className="border-card-border bg-surface p-4">
-            <div className="text-2xl font-bold text-card-foreground">{plan.activeDays.length}</div>
-            <div className="text-sm text-muted-foreground">Days Planned</div>
-          </Card>
-          <Card className="border-card-border bg-surface p-4">
-            <div className="text-2xl font-bold text-card-foreground">
-              {Math.round(plan.scheduleItems.reduce((sum, item) => sum + item.activity.estimatedTime, 0) / 60)}h
-            </div>
-            <div className="text-sm text-muted-foreground">Total Time</div>
-          </Card>
-          <Card className="border-card-border bg-surface p-4">
-            <div className="text-2xl font-bold text-card-foreground">{Object.keys(activitiesByCategory).length}</div>
-            <div className="text-sm text-muted-foreground">Categories</div>
-          </Card>
-        </div>
+        {/* Activities by Category Chart */}
+        <Card className="border-card-border bg-surface dark:bg-neutral-900">
+          <CardHeader>
+            <CardTitle className="text-lg dark:text-white">Activity Categories</CardTitle>
+            <CardDescription className="dark:text-gray-300">
+              Distribution of activities by category
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="count"
+                  label={({ category, count }) => `${category}: ${count}`}
+                  labelStyle={{ fill: theme === "dark" ? "#fff" : "#000" }}
+                >
+                  {categoryData.map((_, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: theme === "dark" ? "#1f2937" : "#fff",
+                    color: theme === "dark" ? "#fff" : "#000",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
-    );
-  }
+
+      {/* Summary Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="border-card-border bg-surface dark:bg-neutral-900 p-4">
+          <div className="text-2xl font-bold text-card-foreground dark:text-white">
+            {plan.scheduleItems.length}
+          </div>
+          <div className="text-sm text-muted-foreground dark:text-gray-400">Total Activities</div>
+        </Card>
+        <Card className="border-card-border bg-surface dark:bg-neutral-900 p-4">
+          <div className="text-2xl font-bold text-card-foreground dark:text-white">
+            {plan.activeDays.length}
+          </div>
+          <div className="text-sm text-muted-foreground dark:text-gray-400">Days Planned</div>
+        </Card>
+        <Card className="border-card-border bg-surface dark:bg-neutral-900 p-4">
+          <div className="text-2xl font-bold text-card-foreground dark:text-white">
+            {Math.round(
+              plan.scheduleItems.reduce((sum, item) => sum + item.activity.estimatedTime, 0) / 60
+            )}
+            h
+          </div>
+          <div className="text-sm text-muted-foreground dark:text-gray-400">Total Time</div>
+        </Card>
+        <Card className="border-card-border bg-surface dark:bg-neutral-900 p-4">
+          <div className="text-2xl font-bold text-card-foreground dark:text-white">
+            {Object.keys(activitiesByCategory).length}
+          </div>
+          <div className="text-sm text-muted-foreground dark:text-gray-400">Categories</div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 
   // Timeline View
   const timeSlots = ["morning", "afternoon", "evening"];

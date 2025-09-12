@@ -6,6 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 import Link from 'next/link';
 import Image from "next/image";
+import Features from "@/components/Features";
 
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
     <>
     <HeroSection/>
     <FeatureSection/>
+    <Features/>
     <CTASection/>
     </>
   );

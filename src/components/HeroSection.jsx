@@ -50,21 +50,25 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start lg:items-center">
+              <Link href="/weekend-planner">
               <button
                 className="px-8 py-3 text-[15px] bg-indigo-600 flex items-center gap-2 cursor-pointer text-white font-medium rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-md"
               >
                 <Calendar1 className='h-5 w-5'/>
-                <Link href="/weekend-planner">Start Planning</Link>
+                Start Planning
               </button>
+              </Link>
+              <Link href="/saved">
               <Button 
                 variant="outline" 
                 className={`px-8 py-6 cursor-pointer`}
 
               >
                 <Book className="h-4 w-4" />
-                <Link href="/saved">Saved Plans</Link>
+                Saved Plans
                 
               </Button>
+              </Link>
             </div>
 
             {/* Features Preview */}

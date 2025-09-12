@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import ThemeSwitcher from "./ThemeSwitcher"
-import { Upload } from "lucide-react"
+import { Plus, PlusCircle, PlusCircleIcon, Upload } from "lucide-react"
 
 const themes = ["Lazy Weekend", "Adventurous", "Family"]
 const savedPlans = [
@@ -31,50 +31,34 @@ export default function WeekendlyNavbar() {
       <div className="container mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-[#9843ed] flex items-center space-x-1">
+        <Link href="/" className="text-2xl font-bold text-indigo-500 flex items-center space-x-1">
           <span>Weekendly</span>
           <span>✨</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-6 ">
           <NavigationMenu>
             <NavigationMenuList className="flex items-center space-x-4">
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="px-2 py-1 rounded-md hover:bg-indigo-50 dark:hover:bg-zinc-800">
-                  🎨 {themeType}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="mt-1 p-2 bg-white dark:bg-zinc-900 rounded-md shadow-lg grid gap-2 w-48">
-                  {themes.map(theme => (
-                    <Button
-                      key={theme}
-                      variant="ghost"
-                      className="w-full text-left hover:bg-indigo-100 dark:hover:bg-zinc-800"
-                      onClick={() => setThemeType(theme)}
-                    >
-                      {theme}
-                    </Button>
-                  ))}
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              {/* Browse Activities */}
+              
+              {/* Share / Export */}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/browse" className="px-2 py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    Browse Activities
+                  <Link href="/share" className="px-2 flex-row gap-2 items-center py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <PlusCircleIcon/><span>Create New Plan</span>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/saved" className="px-2 py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    Saved Plans
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              {/* Share / Export */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/share" className="px-2 flex-row gap-2 items-center py-1 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    <Upload/><span>Share</span>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+              
 
               {/* Theme Selector */}
               
@@ -84,6 +68,11 @@ export default function WeekendlyNavbar() {
             <NavigationMenuIndicator />
             <NavigationMenuViewport />
           </NavigationMenu>
+          <div className="flex gap-4">
+        <div className="hidden md:flex">
+          <ThemeSwitcher />
+        </div>
+        </div>
 
           {/* Search */}
           
@@ -91,12 +80,7 @@ export default function WeekendlyNavbar() {
         </div>
 
         {/* Right: Theme Toggle */}
-        <div className="flex gap-4">
-        <Input placeholder="Search activities..." className="w-48" />
-        <div className="hidden md:flex">
-          <ThemeSwitcher />
-        </div>
-        </div>
+        
 
       </div>
     </nav>

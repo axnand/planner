@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import ThemeSwitcher from "./ThemeSwitcher";
 
 
 const WeekendPlanner = ({ onBack }) => {
@@ -239,7 +240,9 @@ const WeekendPlanner = ({ onBack }) => {
               <Plus className="h-4 w-4" />
               Add Activity
             </Button>
+            <ThemeSwitcher />
           </div>
+          
         </div>
       </header>
 
