@@ -13,11 +13,16 @@ import PlanVisualisation from "@/components/PlanVisualisation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
+import PosterGenerator from "@/components/PosterGenerator";
 
 const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
   const [savedPlans, setSavedPlans] = useState([]);
   const [viewMode, setViewMode] = useState("timeline");
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
+  const [showExportDialog, setShowExportDialog] = useState(null); 
+  const [showPosterGenerator, setShowPosterGenerator] = useState(null); // stores plan object when open
+
+
 
   useEffect(() => {
     loadSavedPlans();
@@ -171,7 +176,7 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
       <main className="container mx-auto px-6 py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {savedPlans.map(plan => (
-            <Card key={plan.id} className="border-card-border bg-surface hover:shadow-lg transition-shadow">
+            <Card key={plan.id} className="border-card-border bg-[#171717] hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -241,9 +246,43 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
                   </Button>
 
                   {/* Export PDF */}
-                  <Button variant="outline" size="sm" onClick={() => exportPlanAsPDF(plan)} title="Export as PDF">
-                    <Download className="h-3 w-3" />
-                  </Button>
+                  {/* Export Options */}
+<Dialog open={showExportDialog === plan.id} onOpenChange={open => setShowExportDialog(open ? plan.id : null)}>
+  <DialogTrigger asChild>
+    <Button variant="outline" size="sm" title="Export plan">
+      <Download className="h-3 w-3" />
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="max-w-md">
+    <DialogHeader>
+      <DialogTitle>Export {plan.name}</DialogTitle>
+      <DialogDescription>Choose how you want to export this plan</DialogDescription>
+    </DialogHeader>
+    <div className="flex flex-col gap-3 mt-4">
+      <Button 
+        variant="outline" 
+        className="gap-2" 
+        onClick={() => {
+          exportPlanAsPDF(plan);
+          setShowExportDialog(null);
+        }}
+      >
+        <Download className="h-4 w-4" /> Export as PDF
+      </Button>
+      <Button 
+        variant="outline" 
+        className="gap-2" 
+        onClick={() => {
+          setShowPosterGenerator(plan); // 👈 new poster generator handler
+          setShowExportDialog(null);
+        }}
+      >
+        <Download className="h-4 w-4" /> Export as Poster
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
 
                   {/* Edit */}
                   <Button variant="outline" size="sm" onClick={() => onEditPlan(plan)} title="Edit plan">
@@ -289,6 +328,24 @@ const SavedPlansManager = ({ onBack, onEditPlan, onCreateNew }) => {
           </Card>
         )}
       </main>
+
+      <Dialog open={!!showPosterGenerator} onOpenChange={open => !open && setShowPosterGenerator(null)}>
+  <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+    <DialogHeader>
+      <DialogTitle>Export Poster</DialogTitle>
+    </DialogHeader>
+    {showPosterGenerator && (
+      <PosterGenerator
+        scheduleItems={showPosterGenerator.scheduleItems}
+        theme={showPosterGenerator.theme}
+        planName={showPosterGenerator.name}
+        onClose={() => setShowPosterGenerator(null)}
+        isPopup={true}
+      />
+    )}
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 };

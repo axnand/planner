@@ -1,89 +1,31 @@
 import { useState, useRef } from "react";
-import { Download, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Download, Camera as ImageIcon, Loader2, FileImage, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import html2canvas from "html2canvas";
 
 const PosterGenerator = ({ scheduleItems, theme, planName }) => {
   const [generating, setGenerating] = useState(false);
-  const posterRef = useRef(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const generatePoster = async () => {
+  // Method 1: Pure Canvas API - Most Reliable
+  const generateCanvasPoster = async () => {
     setGenerating(true);
-    try {
-      // Method 1: Use a visible poster element that gets rendered in the DOM
-      const posterElement = posterRef.current;
-      
-      if (!posterElement) {
-        throw new Error("Poster element not found");
-      }
-
-      // Wait for any images or fonts to load
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Generate canvas with simplified options
-      const canvas = await html2canvas(posterElement, {
-        width: 800,
-        height: 1200,
-        scale: 1, // Reduced scale to avoid memory issues
-        backgroundColor: getThemeColor(),
-        useCORS: true,
-        allowTaint: true,
-        logging: false, // Disable logging
-        foreignObjectRendering: false, // Disable foreign object rendering
-        removeContainer: true,
-        imageTimeout: 15000,
-        onclone: (clonedDoc) => {
-          // Clean up any problematic styles in the cloned document
-          const clonedElement = clonedDoc.getElementById('poster-content');
-          if (clonedElement) {
-            // Remove any CSS variables or complex selectors
-            const allElements = clonedElement.querySelectorAll('*');
-            allElements.forEach(el => {
-              const style = el.style;
-              // Remove any CSS that might cause issues
-              const unsupported = ["var(", "lab(", "oklab(", "lch(", "oklch("];
-              if (style.background && unsupported.some(fn => style.background.includes(fn))) {
-                style.background = getThemeColor();
-              }
-              if (style.color && unsupported.some(fn => style.color.includes(fn))) {
-                style.color = "#000000";
-              }
-            });
-          }
-        }
-      });
-
-      // Download image
-      const link = document.createElement("a");
-      link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.png`;
-      link.href = canvas.toDataURL('image/png', 0.8);
-      link.click();
-
-      toast.success("Poster generated successfully!");
-    } catch (error) {
-      console.error("Error generating poster:", error);
-      // Try fallback method
-      await generateSimplePoster();
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  // Fallback method using pure Canvas API
-  const generateSimplePoster = async () => {
     try {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = 800;
-      canvas.height = 1200;
+      
+      // High resolution for better quality
+      const scale = 2;
+      canvas.width = 800 * scale;
+      canvas.height = 1200 * scale;
+      ctx.scale(scale, scale);
 
       // Background
       ctx.fillStyle = getThemeColor();
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, 800, 1200);
 
-      // Header background gradient (simplified)
+      // Header gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, 300);
       const themeColors = getThemeGradientColors();
       gradient.addColorStop(0, themeColors.start);
@@ -91,117 +33,562 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 800, 300);
 
-      // Title
+      // Title with shadow effect
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 36px Arial, sans-serif';
+      ctx.font = 'bold 42px Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(planName || 'My Weekend Plan', 400, 120);
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
+      
+      // Smart title sizing and wrapping
+      const title = planName || 'My Weekend Plan';
+      const maxTitleWidth = 700;
+      let fontSize = 42;
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      
+      // Reduce font size if needed
+      while (ctx.measureText(title).width > maxTitleWidth && fontSize > 28) {
+        fontSize -= 2;
+        ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      }
+      
+      // Multi-line title if still too long
+      const words = title.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+      
+      for (let i = 1; i < words.length; i++) {
+        const testLine = currentLine + ' ' + words[i];
+        const testWidth = ctx.measureText(testLine).width;
+        
+        if (testWidth > maxTitleWidth) {
+          lines.push(currentLine);
+          currentLine = words[i];
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine);
+      
+      // Draw title lines
+      let titleY = 100;
+      const lineHeight = fontSize * 1.2;
+      if (lines.length > 1) {
+        titleY = 100 - ((lines.length - 1) * lineHeight) / 2;
+      }
+      
+      lines.forEach((line, index) => {
+        ctx.fillText(line, 400, titleY + (index * lineHeight));
+      });
 
-      // Theme subtitle
+      // Reset shadow
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Theme badge
+      const badgeY = titleY + (lines.length * lineHeight) + 20;
+      const badgeText = `${theme.toUpperCase()} THEME`;
       ctx.font = '18px Arial, sans-serif';
-      ctx.fillText(`${theme.toUpperCase()} THEME`, 400, 160);
+      const badgeWidth = ctx.measureText(badgeText).width + 40;
+      
+      // Badge background
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.beginPath();
+      ctx.roundRect(400 - badgeWidth/2, badgeY - 15, badgeWidth, 30, 15);
+      ctx.fill();
+      
+      // Badge text
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(badgeText, 400, badgeY + 5);
 
-      // Schedule items
+      // Content area
+      let yPos = 360;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#1a1a1a';
+
+      // Group activities by day
       const groupedByDay = scheduleItems.reduce((acc, item) => {
         if (!acc[item.day]) acc[item.day] = [];
         acc[item.day].push(item);
         return acc;
       }, {});
 
-      let yPos = 350;
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#1a1a1a';
-
+      // Render each day
       Object.entries(groupedByDay).forEach(([day, items]) => {
         // Day header
-        ctx.font = 'bold 24px Arial, sans-serif';
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = 'bold 32px Arial, sans-serif';
         ctx.fillText(day.charAt(0).toUpperCase() + day.slice(1), 60, yPos);
-        yPos += 40;
+        
+        // Day underline with theme color
+        ctx.strokeStyle = themeColors.start;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(60, yPos + 10);
+        ctx.lineTo(300, yPos + 10);
+        ctx.stroke();
+        
+        yPos += 55;
 
-        // Activities
-        ctx.font = '16px Arial, sans-serif';
-        items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
-          // Activity background
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(60, yPos - 25, 680, 60);
+        // Activities for this day
+        items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach((item, index) => {
+          // Card shadow
+          ctx.fillStyle = 'rgba(0,0,0,0.05)';
+          ctx.beginPath();
+          ctx.roundRect(65, yPos - 25, 680, 80, 15);
+          ctx.fill();
           
-          // Activity border
+          // Card background
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(60, yPos - 30, 680, 80, 15);
+          ctx.fill();
+          
+          // Card border
           ctx.strokeStyle = '#e5e7eb';
           ctx.lineWidth = 1;
-          ctx.strokeRect(60, yPos - 25, 680, 60);
+          ctx.stroke();
 
-          // Activity text
+          // Activity icon with background
+          const iconX = 90;
+          const iconY = yPos + 10;
+          
+          // Icon background circle
+          ctx.fillStyle = '#f8fafc';
+          ctx.beginPath();
+          ctx.arc(iconX, iconY - 15, 25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#e2e8f0';
+          ctx.stroke();
+          
+          // Icon
+          ctx.font = '28px Arial, sans-serif';
           ctx.fillStyle = '#1a1a1a';
-          ctx.font = 'bold 18px Arial, sans-serif';
-          ctx.fillText(`${item.activity.icon} ${item.activity.name}`, 80, yPos);
-          
-          ctx.fillStyle = '#6b7280';
-          ctx.font = '14px Arial, sans-serif';
-          ctx.fillText(item.activity.description, 80, yPos + 20);
-          
-          // Time
-          ctx.fillStyle = '#374151';
-          ctx.font = 'bold 14px Arial, sans-serif';
-          ctx.textAlign = 'right';
-          ctx.fillText(item.startTime, 720, yPos + 5);
-          ctx.textAlign = 'left';
+          ctx.textAlign = 'center';
+          ctx.fillText(item.activity?.icon || '📅', iconX, iconY - 5);
 
-          yPos += 80;
+          // Activity content
+          ctx.textAlign = 'left';
+          
+          // Activity name
+          ctx.font = 'bold 20px Arial, sans-serif';
+          ctx.fillStyle = '#1a1a1a';
+          const activityName = item.activity?.name || 'Activity';
+          ctx.fillText(activityName, 140, yPos - 8);
+          
+          // Activity description
+          ctx.font = '15px Arial, sans-serif';
+          ctx.fillStyle = '#6b7280';
+          const description = item.activity?.description || 'No description';
+          const maxDescLength = 50;
+          const truncatedDesc = description.length > maxDescLength 
+            ? description.substring(0, maxDescLength) + '...' 
+            : description;
+          ctx.fillText(truncatedDesc, 140, yPos + 15);
+          
+          // Time badge
+          const timeText = item.startTime || '00:00';
+          ctx.font = 'bold 16px Arial, sans-serif';
+          const timeMetrics = ctx.measureText(timeText);
+          const timeWidth = timeMetrics.width;
+          const badgeX = 680 - timeWidth - 20;
+          const badgeY = yPos - 18;
+          
+          // Time badge background with theme color
+          const timeBadgeGradient = ctx.createLinearGradient(badgeX, badgeY, badgeX, badgeY + 28);
+          timeBadgeGradient.addColorStop(0, themeColors.start + '20'); // 20% opacity
+          timeBadgeGradient.addColorStop(1, themeColors.end + '20');
+          ctx.fillStyle = timeBadgeGradient;
+          ctx.beginPath();
+          ctx.roundRect(badgeX, badgeY, timeWidth + 20, 28, 14);
+          ctx.fill();
+          
+          // Time badge border
+          ctx.strokeStyle = themeColors.start;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          
+          // Time text
+          ctx.fillStyle = '#374151';
+          ctx.textAlign = 'center';
+          ctx.fillText(timeText, badgeX + (timeWidth + 20) / 2, badgeY + 19);
+
+          yPos += 100;
         });
-        yPos += 20;
+        yPos += 30;
       });
 
-      // Footer
+      // Footer with decorative line
+      const footerY = 1150;
+      ctx.strokeStyle = themeColors.start;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(300, footerY - 20);
+      ctx.lineTo(500, footerY - 20);
+      ctx.stroke();
+      
       ctx.fillStyle = '#9ca3af';
-      ctx.font = '12px Arial, sans-serif';
+      ctx.font = '16px Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Created with Weekendly', 400, 1160);
+      ctx.fillText('Created with Weekendly', 400, footerY);
 
-      // Download
+      // Download the image
       const link = document.createElement("a");
       link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.png`;
-      link.href = canvas.toDataURL('image/png', 0.8);
+      link.href = canvas.toDataURL('image/png', 0.95);
       link.click();
 
-      toast.success("Poster generated using fallback method!");
+      toast.success("High-quality poster generated!");
     } catch (error) {
-      console.error("Fallback poster generation failed:", error);
-      toast.error("Failed to generate poster. Please try again.");
+      console.error("Canvas generation failed:", error);
+      toast.error("Failed to generate poster: " + error.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  // Method 2: SVG Export (Vector graphics, scalable)
+  const generateSVGPoster = async () => {
+    setGenerating(true);
+    try {
+      const themeColors = getThemeGradientColors();
+      const groupedByDay = scheduleItems.reduce((acc, item) => {
+        if (!acc[item.day]) acc[item.day] = [];
+        acc[item.day].push(item);
+        return acc;
+      }, {});
+
+      let yPos = 360;
+      let activitiesHTML = '';
+      
+      Object.entries(groupedByDay).forEach(([day, items]) => {
+        // Day header
+        activitiesHTML += `
+          <text x="60" y="${yPos}" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1a1a1a">
+            ${day.charAt(0).toUpperCase() + day.slice(1)}
+          </text>
+          <line x1="60" y1="${yPos + 10}" x2="300" y2="${yPos + 10}" stroke="${themeColors.start}" stroke-width="4"/>
+        `;
+        yPos += 55;
+
+        items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
+          // Activity card
+          activitiesHTML += `
+            <rect x="60" y="${yPos - 30}" width="680" height="80" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+            <circle cx="90" cy="${yPos + 10 - 15}" r="25" fill="#f8fafc" stroke="#e2e8f0"/>
+            <text x="90" y="${yPos + 10 - 5}" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="#1a1a1a">
+              ${item.activity?.icon || '📅'}
+            </text>
+            <text x="140" y="${yPos - 8}" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1a1a1a">
+              ${item.activity?.name || 'Activity'}
+            </text>
+            <text x="140" y="${yPos + 15}" font-family="Arial, sans-serif" font-size="15" fill="#6b7280">
+              ${(item.activity?.description || 'No description').substring(0, 50)}
+            </text>
+            <rect x="600" y="${yPos - 18}" width="80" height="28" rx="14" fill="${themeColors.start}20" stroke="${themeColors.start}"/>
+            <text x="640" y="${yPos - 1}" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#374151">
+              ${item.startTime || '00:00'}
+            </text>
+          `;
+          yPos += 100;
+        });
+        yPos += 30;
+      });
+
+      const svgContent = `
+        <svg width="800" height="1200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="headerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:${themeColors.start};stop-opacity:0.8" />
+              <stop offset="100%" style="stop-color:${themeColors.end};stop-opacity:0.8" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Background -->
+          <rect width="800" height="1200" fill="${getThemeColor()}"/>
+          
+          <!-- Header Background -->
+          <rect width="800" height="300" fill="url(#headerGradient)"/>
+          
+          <!-- Title -->
+          <text x="400" y="120" font-family="Arial, sans-serif" font-size="42" font-weight="bold" 
+                text-anchor="middle" fill="white" style="text-shadow: 0 4px 8px rgba(0,0,0,0.3)">
+            ${planName || "My Weekend Plan"}
+          </text>
+          
+          <!-- Theme Badge -->
+          <rect x="300" y="140" width="200" height="30" rx="15" fill="rgba(255,255,255,0.25)"/>
+          <text x="400" y="160" font-family="Arial, sans-serif" font-size="18" font-weight="600" 
+                text-anchor="middle" fill="white" letter-spacing="2px">
+            ${theme.toUpperCase()} THEME
+          </text>
+          
+          <!-- Activities -->
+          ${activitiesHTML}
+          
+          <!-- Footer -->
+          <line x1="300" y1="1130" x2="500" y2="1130" stroke="${themeColors.start}" stroke-width="2"/>
+          <text x="400" y="1150" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#9ca3af">
+            Created with Weekendly
+          </text>
+        </svg>
+      `;
+
+      // Download SVG
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.svg`;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast.success("SVG poster generated! (Scalable vector format)");
+    } catch (error) {
+      console.error("SVG generation failed:", error);
+      toast.error("Failed to generate SVG: " + error.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  // Method 3: Print-friendly HTML export
+  const generatePrintHTML = async () => {
+    setGenerating(true);
+    try {
+      const themeColors = getThemeGradientColors();
+      const groupedByDay = scheduleItems.reduce((acc, item) => {
+        if (!acc[item.day]) acc[item.day] = [];
+        acc[item.day].push(item);
+        return acc;
+      }, {});
+
+      let activitiesHTML = '';
+      Object.entries(groupedByDay).forEach(([day, items]) => {
+        activitiesHTML += `
+          <div class="day-section">
+            <h2 class="day-header">${day.charAt(0).toUpperCase() + day.slice(1)}</h2>
+            <div class="activities">
+        `;
+        
+        items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
+          activitiesHTML += `
+            <div class="activity-card">
+              <div class="activity-icon">${item.activity?.icon || '📅'}</div>
+              <div class="activity-content">
+                <h3 class="activity-name">${item.activity?.name || 'Activity'}</h3>
+                <p class="activity-description">${item.activity?.description || 'No description'}</p>
+              </div>
+              <div class="activity-time">${item.startTime || '00:00'}</div>
+            </div>
+          `;
+        });
+        
+        activitiesHTML += `
+            </div>
+          </div>
+        `;
+      });
+
+      const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${planName || "My Weekend Plan"} - Poster</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: ${getThemeColor()};
+            width: 800px;
+            height: 1200px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            height: 300px;
+            background: linear-gradient(135deg, ${themeColors.start} 0%, ${themeColors.end} 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+        }
+        .title {
+            font-size: 42px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .theme-badge {
+            background: rgba(255,255,255,0.25);
+            padding: 15px 30px;
+            border-radius: 15px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .content {
+            padding: 60px;
+            padding-top: 40px;
+        }
+        .day-section {
+            margin-bottom: 40px;
+        }
+        .day-header {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+            border-bottom: 4px solid ${themeColors.start};
+            padding-bottom: 10px;
+            display: inline-block;
+            min-width: 240px;
+        }
+        .activities {
+            display: grid;
+            gap: 15px;
+        }
+        .activity-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .activity-icon {
+            font-size: 32px;
+            min-width: 50px;
+            text-align: center;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .activity-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        .activity-time {
+            background: linear-gradient(135deg, ${themeColors.start}20, ${themeColors.end}20);
+            border: 1px solid ${themeColors.start};
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        .footer::before {
+            content: '';
+            display: block;
+            width: 200px;
+            height: 2px;
+            background: ${themeColors.start};
+            margin: 0 auto 10px;
+        }
+        .footer p {
+            font-size: 16px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        @media print {
+            body { width: 8.5in; height: 11in; }
+            .header { height: 3in; }
+            .content { padding: 0.5in; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">${planName || "My Weekend Plan"}</h1>
+        <div class="theme-badge">${theme} Theme</div>
+    </div>
+    
+    <div class="content">
+        ${activitiesHTML}
+    </div>
+    
+    <div class="footer">
+        <p>Created with Weekendly</p>
+    </div>
+</body>
+</html>
+      `;
+
+      // Download HTML file
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.html`;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast.success("HTML poster generated! Open in browser and use Ctrl+P to print.");
+    } catch (error) {
+      console.error("HTML generation failed:", error);
+      toast.error("Failed to generate HTML: " + error.message);
+    } finally {
+      setGenerating(false);
     }
   };
 
   const getThemeColor = () => {
     switch (theme) {
-      case "lazy":
-        return "#f8fafc";
-      case "adventurous":
-        return "#fef7f0";
-      case "family":
-        return "#f0f9ff";
-      default:
-        return "#ffffff";
+      case "lazy": return "#f8fafc";
+      case "adventurous": return "#fef7f0"; 
+      case "family": return "#f0f9ff";
+      default: return "#ffffff";
     }
   };
 
   const getThemeGradientColors = () => {
     switch (theme) {
-      case "lazy":
-        return { start: "#667eea", end: "#764ba2" };
-      case "adventurous":
-        return { start: "#f093fb", end: "#f5576c" };
-      case "family":
-        return { start: "#4facfe", end: "#00f2fe" };
-      default:
-        return { start: "#667eea", end: "#764ba2" };
+      case "lazy": return { start: "#667eea", end: "#764ba2" };
+      case "adventurous": return { start: "#f093fb", end: "#f5576c" };
+      case "family": return { start: "#4facfe", end: "#00f2fe" };
+      default: return { start: "#667eea", end: "#764ba2" };
     }
   };
 
-  const getThemeGradient = () => {
-    const colors = getThemeGradientColors();
-    return `linear-gradient(135deg, ${colors.start} 0%, ${colors.end} 100%)`;
-  };
-
-  if (scheduleItems.length === 0) {
+  if (!scheduleItems || scheduleItems.length === 0) {
     return (
       <Card>
         <CardContent className="text-center py-8">
@@ -217,12 +604,6 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
     );
   }
 
-  const groupedByDay = scheduleItems.reduce((acc, item) => {
-    if (!acc[item.day]) acc[item.day] = [];
-    acc[item.day].push(item);
-    return acc;
-  }, {});
-
   return (
     <div className="space-y-6">
       <Card>
@@ -232,183 +613,117 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
             Generate Weekend Poster
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
-            Create a beautiful poster of your weekend plan to share or print
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            Choose your preferred export format. Each method has different advantages:
           </p>
-          <div className="flex gap-2">
-            <Button onClick={generatePoster} disabled={generating} className="gap-2">
-              {generating ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-              {generating ? "Generating..." : "Generate Poster"}
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Button 
+              onClick={generateCanvasPoster} 
+              disabled={generating} 
+              className="gap-2 flex-col h-auto py-4"
+              variant="default"
+            >
+              {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileImage className="h-4 w-4" />}
+              <div>
+                <div className="font-semibold">Canvas PNG</div>
+                <div className="text-xs opacity-90">High quality image</div>
+              </div>
             </Button>
             
             <Button 
-              onClick={generateSimplePoster} 
+              onClick={generateSVGPoster} 
               disabled={generating} 
-              variant="outline" 
-              className="gap-2"
+              variant="outline"
+              className="gap-2 flex-col h-auto py-4"
+            >
+              <Code className="h-4 w-4" />
+              <div>
+                <div className="font-semibold">SVG Vector</div>
+                <div className="text-xs opacity-75">Scalable graphics</div>
+              </div>
+            </Button>
+            
+            <Button 
+              onClick={generatePrintHTML} 
+              disabled={generating} 
+              variant="outline"
+              className="gap-2 flex-col h-auto py-4"
             >
               <Download className="h-4 w-4" />
-              Simple Version
+              <div>
+                <div className="font-semibold">Print HTML</div>
+                <div className="text-xs opacity-75">Browser printable</div>
+              </div>
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Hidden poster element for html2canvas */}
-      <div className="fixed -left-[9999px] top-0 opacity-0 pointer-events-none">
-        <div 
-          ref={posterRef}
-          id="poster-content"
-          style={{
-            all: "unset",
-            display: "block",
-            width: "800px",
-            height: "1200px",
-            backgroundColor: getThemeColor(),
-            color: "#000000",
-            fontFamily: "Arial, sans-serif",
-            padding: "60px",
-            boxSizing: "border-box",
-            position: "relative",
-            overflow: "hidden"
-          }}
-        >
-          {/* Header Background */}
-          <div style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            right: '0',
-            height: '300px',
-            background: getThemeGradient(),
-            opacity: '0.8'
-          }}></div>
           
-          {/* Header Content */}
-          <div style={{ position: 'relative', zIndex: '2', textAlign: 'center', marginBottom: '60px' }}>
-            <h1 style={{
-              fontSize: '48px',
-              fontWeight: '800',
-              color: '#ffffff',
-              margin: '0 0 20px 0',
-              textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              lineHeight: '1.2'
-            }}>
-              {planName || "My Weekend Plan"}
-            </h1>
-            <div style={{
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: '20px',
-              padding: '15px 30px',
-              display: 'inline-block'
-            }}>
-              <p style={{
-                fontSize: '24px',
-                color: '#ffffff',
-                margin: '0',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: '2px'
-              }}>
-                {theme} Theme
+          {generating && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-700">
+                Generating your poster... This may take a moment for high quality output.
               </p>
             </div>
-          </div>
-
-          {/* Schedule Content */}
-          <div style={{ position: 'relative', zIndex: '2' }}>
-            {Object.entries(groupedByDay).map(([day, items]) => (
-              <div key={day} style={{ marginBottom: '40px' }}>
-                <h2 style={{
-                  fontSize: '32px',
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  margin: '0 0 20px 0',
-                  textTransform: 'capitalize',
-                  borderBottom: '3px solid #e5e7eb',
-                  paddingBottom: '10px'
-                }}>
-                  {day}
-                </h2>
-                <div style={{ display: 'grid', gap: '15px' }}>
-                  {items.sort((a, b) => a.startTime.localeCompare(b.startTime)).map((item, index) => (
-                    <div key={`${day}-${index}`} style={{
-                      backgroundColor: '#ffffff',
-                      borderRadius: '15px',
-                      padding: '20px',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '20px',
-                      border: '1px solid #e5e7eb'
-                    }}>
-                      <div style={{
-                        fontSize: '36px',
-                        minWidth: '50px',
-                        textAlign: 'center'
-                      }}>
-                        {item.activity.icon}
-                      </div>
-                      <div style={{ flex: '1' }}>
-                        <h3 style={{
-                          fontSize: '20px',
-                          fontWeight: '600',
-                          color: '#1a1a1a',
-                          margin: '0 0 8px 0',
-                          lineHeight: '1.3'
-                        }}>
-                          {item.activity.name}
-                        </h3>
-                        <p style={{
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          margin: '0',
-                          lineHeight: '1.4'
-                        }}>
-                          {item.activity.description}
-                        </p>
-                      </div>
-                      <div style={{
-                        backgroundColor: '#f3f4f6',
-                        borderRadius: '10px',
-                        padding: '8px 15px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
-                        {item.startTime}
-                      </div>
-                    </div>
-                  ))}
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Live Preview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Preview</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPreview(!showPreview)}
+            >
+              {showPreview ? 'Hide' : 'Show'} Preview
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        {showPreview && (
+          <CardContent>
+            <div className="border rounded-lg p-4 bg-gray-50" style={{ 
+              width: '400px', 
+              height: '600px', 
+              margin: '0 auto',
+              background: `linear-gradient(135deg, ${getThemeGradientColors().start}20, ${getThemeGradientColors().end}20)`
+            }}>
+              <div className="text-center mb-4">
+                <h3 className="text-xl font-bold">{planName || "My Weekend Plan"}</h3>
+                <div className="text-sm bg-white/50 rounded px-2 py-1 inline-block mt-2">
+                  {theme.toUpperCase()} THEME
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div style={{
-            position: 'absolute',
-            bottom: '30px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center'
-          }}>
-            <p style={{
-              fontSize: '16px',
-              color: '#9ca3af',
-              margin: '0',
-              fontWeight: '500'
-            }}>
-              Created with Weekendly
-            </p>
-          </div>
-        </div>
-      </div>
+              <div className="space-y-3">
+                {Object.entries(scheduleItems.reduce((acc, item) => {
+                  if (!acc[item.day]) acc[item.day] = [];
+                  acc[item.day].push(item);
+                  return acc;
+                }, {})).map(([day, items]) => (
+                  <div key={day} className="border-l-2 border-blue-500 pl-3">
+                    <h4 className="font-semibold text-sm capitalize">{day}</h4>
+                    {items.slice(0, 2).map((item, i) => (
+                      <div key={i} className="text-xs bg-white/70 rounded p-2 mt-1">
+                        <span className="mr-2">{item.activity?.icon}</span>
+                        <span className="font-medium">{item.activity?.name}</span>
+                        <span className="float-right text-gray-600">{item.startTime}</span>
+                      </div>
+                    ))}
+                    {items.length > 2 && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        +{items.length - 2} more activities
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        )}
+      </Card>
     </div>
   );
 };
