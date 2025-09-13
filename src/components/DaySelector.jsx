@@ -114,7 +114,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
         </div>
 
         {activeDays.length > 0 && (
-          <div className="pt-2 border-t border-gray-200 dark:border-card-border">
+          <div className="pt-2 border-t border-gray-200 dark:border-card-border dark:border-zinc-700">
             <p className="text-sm text-gray-500 dark:text-muted-foreground mb-2">
               Selected Days ({activeDays.length}):
             </p>

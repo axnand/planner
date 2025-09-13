@@ -100,6 +100,20 @@ const WeekendPlannerContent = ({ onBack }) => {
     }
   }, []);
 
+  useEffect(() => {
+  const themeParam = searchParams.get('theme');
+  const openActivity = searchParams.get('openActivity') === 'true';
+
+  if (themeParam) {
+    setCurrentTheme(themeParam);
+  }
+
+  if (openActivity) {
+    setShowActivityBrowser(true);
+  }
+}, [searchParams]);
+
+
   const generateUniqueId = () => {
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
       return crypto.randomUUID();
@@ -184,7 +198,7 @@ const WeekendPlannerContent = ({ onBack }) => {
       </div>
       )}
 
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white backdrop-blur-lg px-4 py-2 dark:border-zinc-800 dark:bg-[#171717]">
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white backdrop-blur-lg px-4 py-4 dark:border-zinc-800 dark:bg-[#171717]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={handleBack}>
@@ -203,33 +217,7 @@ const WeekendPlannerContent = ({ onBack }) => {
           <div className="hidden md:flex items-center gap-3 flex-wrap">
             <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
 
-            <Button variant="outline" onClick={autoGeneratePlan} className="gap-2">
-              <Wand2 className="h-4 w-4" />
-              Auto Generate
-            </Button>
-
-            <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2">
-              <MapPin className="h-4 w-4" />
-              Find Spots
-            </Button>
-
-            <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2">
-              <ImageIcon className="h-4 w-4" />
-              Export Poster
-            </Button>
-
-            <SavePlanDialog
-              scheduleItems={scheduleItems}
-              theme={currentTheme}
-              activeDays={activeDays}
-              editingPlan={editingPlan}
-              isEditMode={isEditMode}
-            >
-              <Button variant="outline" className="gap-2">
-                <Save className="h-4 w-4" />
-                {isEditMode ? "Update Plan" : "Save Plan"}
-              </Button>
-            </SavePlanDialog>
+            
 
            
             <Button onClick={() => router.push("/saved")} className="gap-2 shadow-sm">
@@ -335,6 +323,11 @@ const WeekendPlannerContent = ({ onBack }) => {
             onAddActivity={() => setShowActivityBrowser(true)}
             onAddActivityToSlot={addActivityToSlot}
             theme={currentTheme}
+            editingPlan={editingPlan}
+            isEditMode={isEditMode}
+            autoGeneratePlan={autoGeneratePlan}                      
+            setShowSmartIntegrations={setShowSmartIntegrations}      
+            setShowPosterGenerator={setShowPosterGenerator} 
           />
         )}
       </main>

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
-import { Plus, Calendar, Clock, Edit, Trash2, GripVertical } from "lucide-react"
-import ThemeSelector from "./ThemeSelector"
+import { Plus, Calendar, Clock, Edit, Trash2, GripVertical, Book } from "lucide-react"
+import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Save,
@@ -33,10 +33,13 @@ const ScheduleBuilder = ({
   onAddActivityToSlot,
   theme,
   editingPlan,              
-  isEditMode                
+  isEditMode,
+  autoGeneratePlan,            
+  setShowSmartIntegrations,    
+  setShowPosterGenerator,             
 }) => {
   const [isMounted, setIsMounted] = useState(false)
-  
+  const router = useRouter();
 
   useEffect(() => setIsMounted(true), [])
 
@@ -120,7 +123,19 @@ const ScheduleBuilder = ({
               <Plus className="h-4 w-4" />
               Add Activity
             </Button>
-      </div>
+              <Button variant="outline" onClick={autoGeneratePlan} className="gap-2 hidden sm:flex">
+                <Wand2 className="h-4 w-4" />
+                Auto Generate
+              </Button>
+              <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2 hidden sm:flex">
+                <MapPin className="h-4 w-4" />
+                Find Spots
+              </Button>
+              <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2 hidden sm:flex">
+                <ImageIcon className="h-4 w-4" />
+                Export Poster
+              </Button>
+            </div>
       
       <DragDropContext onDragEnd={onDragEnd}>
         <div
