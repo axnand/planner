@@ -170,25 +170,34 @@ const themeBadgeVariants = {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-card-border bg-surface/80 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold text-foreground">Saved Plans</h1>
-              <p className="text-sm text-muted-foreground">Manage your weekend plans</p>
-            </div>
-          </div>
-          <div className="flex gap-5 mr-4">
-          <Button onClick={onCreateNew} className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Plan
-          </Button>
-          <ThemeSwitcher />
-          </div>
-        </div>
-      </header>
+  <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+    {/* Left side */}
+    <div className="flex items-center gap-2 md:gap-4">
+      <Button variant="ghost" size="icon" onClick={onBack}>
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
+      <div className="min-w-0">
+        <h1 className="text-base md:text-xl font-semibold text-foreground truncate">
+          Saved Plans
+        </h1>
+        <p className="text-xs md:text-sm text-muted-foreground truncate">
+          Manage your weekend plans
+        </p>
+      </div>
+    </div>
+
+    {/* Right side */}
+    <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+      {/* On mobile, show only icon; on md+ show text */}
+      <Button onClick={onCreateNew} className="gap-2">
+        <Plus className="h-4 w-4" />
+        <span className="hidden sm:inline">New Plan</span>
+      </Button>
+      <ThemeSwitcher />
+    </div>
+  </div>
+</header>
+
 
       <main className="container mx-auto px-6 py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
