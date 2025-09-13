@@ -253,7 +253,7 @@ const themeBadgeVariants = {
                     </DialogTrigger>
                       <DialogPortal>
                        <DialogOverlay className="bg-black/10 backdrop-blur-xl fixed inset-0" />
-                    <DialogContent className="!w-[60vw] !max-w-[90vw] h-[90vh] overflow-y-auto dark:bg-[#101010]" overlayClassName="bg-background/60 backdrop-blur-md">
+                    <DialogContent className="!sm:w-[60vw] my-5 sm:my-0 !max-w-[91vw] h-[90vh] overflow-y-auto dark:bg-[#101010]" overlayClassName="bg-background/60 backdrop-blur-md">
 
                       <DialogHeader>
                         <DialogTitle>{plan.name}</DialogTitle>

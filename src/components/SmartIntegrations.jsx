@@ -38,7 +38,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
   setActiveSource("restaurants");
 
   try {
-    // Call your API route (key handled server-side, not here!)
     const response = await fetch(
       `/api/places?query=restaurants+in+${encodeURIComponent(location)}`
     );
@@ -68,7 +67,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         mood: "happy",
       }));
 
-      // Replace only restaurant suggestions
       setSuggestions(restaurantSuggestions);
 
       toast.success(`Found ${restaurantSuggestions.length} restaurants!`);
@@ -257,7 +255,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
       },
     ];
     
-    // Replace only event suggestions
     setSuggestions(mockEvents);
     
     toast.success("Local events loaded!");
@@ -294,7 +291,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Find Spots Nearby</h2>
@@ -327,9 +323,7 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         </CardContent>
       </Card>
 
-      {/* Action Buttons */}
 <div className="flex flex-wrap gap-3">
-  {/* Restaurants Button */}
   <Button 
     onClick={fetchRestaurants} 
     disabled={loading}
@@ -346,7 +340,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
     {loading && activeSource === "restaurants" ? "Loading..." : "Find Restaurants"}
   </Button>
   
-  {/* Events Button */}
   <Button
     onClick={fetchEvents}
     disabled={loading}
@@ -363,7 +356,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
     {loading && activeSource === "events" ? "Loading..." : "Find Events"}
   </Button>
   
-  {/* Weather Button */}
   <Button
     onClick={fetchWeatherSuggestions}
     disabled={loading}
@@ -386,10 +378,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
     </Button>
   )}
 </div>
-
-
-
-      {/* Active Source Indicator */}
       {activeSource && (
         <div className="flex items-center gap-2">
           <Badge variant="secondary">
@@ -401,7 +389,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         </div>
       )}
 
-      {/* Suggestions Grid */}
       {suggestions.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {suggestions.map((suggestion) => (
@@ -463,7 +450,6 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
         </div>
       )}
 
-      {/* Empty State */}
       {suggestions.length === 0 && (
   <Card>
     <CardContent className="text-center py-8">

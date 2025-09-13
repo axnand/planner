@@ -9,7 +9,6 @@ export async function GET(req) {
   );
   const data = await response.json();
 
-  // Map results into a cleaner format for frontend
   const places = (data.results || []).slice(0, 5).map((place, index) => ({
     id: `restaurant-${index}`,
     name: place.name,

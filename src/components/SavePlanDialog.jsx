@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const SavePlanDialog = ({
   scheduleItems = [],
@@ -27,6 +28,7 @@ const SavePlanDialog = ({
   const [planName, setPlanName] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const loadSavedPlansSafe = () => {
     try {
@@ -136,7 +138,7 @@ const SavePlanDialog = ({
           <div>
             Plan "{trimmedName}" saved successfully!{" "}
             <button
-              onClick={() => router.push("/saved-plans")}
+              onClick={() => router.push("/saved")}
               className="underline text-primary hover:text-primary/80"
             >
               View

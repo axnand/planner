@@ -25,12 +25,11 @@ import {
 } from "@/components/ui/dialog"
 import ThemeSwitcher from "./ThemeSwitcher";
 
-// Separate component that uses useSearchParams
+
 const WeekendPlannerContent = ({ onBack }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Check if we're in edit mode
   const isEditMode = searchParams.get('mode') === 'edit';
   const planId = searchParams.get('planId');
   
@@ -45,10 +44,9 @@ const WeekendPlannerContent = ({ onBack }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Load editing plan or regular plan
+
   useEffect(() => {
     if (isEditMode && planId) {
-      // Load the plan for editing
       const editingPlanData = localStorage.getItem("weekendly-editing-plan");
       if (editingPlanData) {
         try {
@@ -57,13 +55,12 @@ const WeekendPlannerContent = ({ onBack }) => {
           setScheduleItems(plan.scheduleItems || []);
           setCurrentTheme(plan.theme || "lazy");
           setActiveDays(plan.activeDays || ["saturday", "sunday"]);
-          console.log("Loaded editing plan:", plan); // Debug log
+          console.log("Loaded editing plan:", plan); 
         } catch (error) {
           console.error("Failed to load editing plan:", error);
         }
       }
     } else {
-      // Load regular draft plan
       const savedPlan = localStorage.getItem("weekendly-plan");
       if (savedPlan) {
         try {
@@ -78,7 +75,6 @@ const WeekendPlannerContent = ({ onBack }) => {
     }
   }, [isEditMode, planId]);
 
-  // Save to localStorage on changes (only if not editing)
   useEffect(() => {
     if (!isEditMode) {
       const planData = {
@@ -91,7 +87,7 @@ const WeekendPlannerContent = ({ onBack }) => {
     }
   }, [scheduleItems, currentTheme, activeDays, isEditMode]);
 
-  // Geolocation for integrations
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -173,9 +169,7 @@ const WeekendPlannerContent = ({ onBack }) => {
 
   const handleBack = () => {
     if (isEditMode) {
-      // Clean up editing plan from localStorage
       localStorage.removeItem("weekendly-editing-plan");
-      // Go back to saved plans
       router.push('/saved');
     } else {
       router.back();
@@ -345,7 +339,7 @@ const WeekendPlannerContent = ({ onBack }) => {
         )}
       </main>
 
-      {/* Poster Generator Popup */}
+      
       <Dialog open={showPosterGenerator} onOpenChange={setShowPosterGenerator}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -364,7 +358,7 @@ const WeekendPlannerContent = ({ onBack }) => {
   );
 };
 
-// Loading fallback component
+
 const WeekendPlannerLoading = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -398,7 +392,7 @@ const WeekendPlannerLoading = () => {
   );
 };
 
-// Main component with Suspense boundary
+
 const WeekendPlanner = ({ onBack }) => {
   return (
     <Suspense fallback={<WeekendPlannerLoading />}>
