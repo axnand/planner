@@ -25,7 +25,7 @@ export default function WeekendlyNavbar() {
   return (
     <nav className="w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-md fixed z-50 py-4 px-6 md:px-10">
       <div className="container mx-auto flex items-center justify-between">
-        {/* Logo */}
+        
         <Link
           href="/"
           className="text-2xl font-bold flex items-center space-x-1"
@@ -36,7 +36,7 @@ export default function WeekendlyNavbar() {
           <span>✨</span>
         </Link>
 
-        {/* Desktop Navigation */}
+        
         <div className="hidden md:flex items-center space-x-6">
           <NavigationMenu>
             <NavigationMenuList className="flex items-center space-x-4">
@@ -68,11 +68,11 @@ export default function WeekendlyNavbar() {
             <NavigationMenuViewport />
           </NavigationMenu>
 
-          {/* Theme Switcher */}
+         
           <ThemeSwitcher />
         </div>
 
-        {/* Mobile Menu Button */}
+        
         <div className="md:hidden flex items-center gap-2">
           <ThemeSwitcher />
           <div className="md:hidden">
@@ -91,7 +91,7 @@ export default function WeekendlyNavbar() {
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      
       {mobileMenuOpen && (
   <div
     className="md:hidden absolute left-24 top-[64px] w-64 bg-white dark:bg-zinc-900 shadow-lg border-t border-zinc-200 dark:border-zinc-800 

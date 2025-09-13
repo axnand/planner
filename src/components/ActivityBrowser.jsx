@@ -73,7 +73,6 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
 
   return (
     <div className="space-y-6">
-      {/* Header */}
 {showCreateForm && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
     <Card className="w-full max-w-md p-6 m-4 border-card-border bg-surface shadow-lg">
@@ -91,7 +90,6 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
           onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
         />
 
-        {/* DropdownMenu for Category */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-between">
@@ -176,7 +174,7 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
         </Button>
       </div>
 
-      {/* Search and Filters */}
+      
       <Card className="p-6 border-card-border bg-surface">
   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
     <div className="relative flex-1">
@@ -215,7 +213,7 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
   </div>
 </Card>
 
-      {/* Activities Grid */}
+     
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredActivities.map((activity) => (
           <ActivityCard
@@ -238,7 +236,7 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
         </Card>
       )}
 
-      {/* Add Activity Modal - Only show when no selectedSlot (main button was clicked) */}
+      
       {selectedActivity && !selectedSlot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <Card className="w-full max-w-md p-6 m-4 border-card-border bg-surface shadow-lg">

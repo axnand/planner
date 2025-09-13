@@ -1,4 +1,4 @@
-// src/components/Providers.jsx
+
 "use client";
 
 import { ScheduleProvider } from "@/context/ScheduleContext";

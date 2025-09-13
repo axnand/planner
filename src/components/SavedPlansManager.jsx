@@ -104,12 +104,12 @@ const themeBadgeVariants = {
       const pageWidth = pdf.internal.pageSize.getWidth();
       let yPosition = 20;
 
-      // Title
+      
       pdf.setFontSize(20).setFont("helvetica", "bold");
       pdf.text(plan.name, pageWidth / 2, yPosition, { align: "center" });
       yPosition += 20;
 
-      // Description
+      
       if (plan.description) {
         pdf.setFontSize(12).setFont("helvetica", "normal");
         const splitDesc = pdf.splitTextToSize(plan.description, pageWidth - 40);
@@ -117,12 +117,12 @@ const themeBadgeVariants = {
         yPosition += splitDesc.length * 6 + 10;
       }
 
-      // Theme + Created At
+      
       pdf.setFontSize(10);
       pdf.text(`Theme: ${plan.theme} | Created: ${formatDate(plan.createdAt)}`, 20, yPosition);
       yPosition += 15;
 
-      // Schedule grouped by day & slot
+      
       plan.activeDays.forEach(day => {
         const dayItems = plan.scheduleItems.filter(item => item.day === day);
         if (dayItems.length > 0) {
@@ -168,10 +168,8 @@ const themeBadgeVariants = {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b border-card-border bg-surface/80 backdrop-blur-sm">
   <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-    {/* Left side */}
     <div className="flex items-center gap-2 md:gap-4">
       <Button variant="ghost" size="icon" onClick={onBack}>
         <ArrowLeft className="h-4 w-4" />
@@ -186,9 +184,7 @@ const themeBadgeVariants = {
       </div>
     </div>
 
-    {/* Right side */}
     <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-      {/* On mobile, show only icon; on md+ show text */}
       <Button onClick={onCreateNew} className="gap-2">
         <Plus className="h-4 w-4" />
         <span className="hidden sm:inline">New Plan</span>
@@ -243,7 +239,6 @@ const themeBadgeVariants = {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* View Plan */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="flex-1">
@@ -274,13 +269,9 @@ const themeBadgeVariants = {
                     </DialogPortal>
                   </Dialog>
 
-                  {/* Share */}
                   <Button variant="outline" size="sm" onClick={() => copyPlanLink(plan.id)} title="Share plan">
                     <Share className="h-3 w-3" />
                   </Button>
-
-                  {/* Export PDF */}
-                  {/* Export Options */}
 <Dialog open={showExportDialog === plan.id} onOpenChange={open => setShowExportDialog(open ? plan.id : null)}>
   <DialogTrigger asChild>
     <Button variant="outline" size="sm" title="Export plan">
@@ -307,7 +298,7 @@ const themeBadgeVariants = {
         variant="outline" 
         className="gap-2" 
         onClick={() => {
-          setShowPosterGenerator(plan); // 👈 new poster generator handler
+          setShowPosterGenerator(plan); 
           setShowExportDialog(null);
         }}
       >
@@ -318,12 +309,12 @@ const themeBadgeVariants = {
 </Dialog>
 
 
-                  {/* Edit */}
+                  
                   <Button variant="outline" size="sm" onClick={() => onEditPlan(plan)} title="Edit plan">
                     <Edit className="h-3 w-3" />
                   </Button>
 
-                  {/* Delete */}
+                  
                   <AlertDialog open={showDeleteDialog === plan.id} onOpenChange={open => setShowDeleteDialog(open ? plan.id : null)}>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" title="Delete plan">

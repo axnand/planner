@@ -8,24 +8,24 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
   const [generating, setGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Method 1: Pure Canvas API - Most Reliable
+  
   const generateCanvasPoster = async () => {
     setGenerating(true);
     try {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // High resolution for better quality
+      
       const scale = 2;
       canvas.width = 800 * scale;
       canvas.height = 1200 * scale;
       ctx.scale(scale, scale);
 
-      // Background
+      
       ctx.fillStyle = getThemeColor();
       ctx.fillRect(0, 0, 800, 1200);
 
-      // Header gradient
+      
       const gradient = ctx.createLinearGradient(0, 0, 0, 300);
       const themeColors = getThemeGradientColors();
       gradient.addColorStop(0, themeColors.start);
@@ -33,7 +33,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 800, 300);
 
-      // Title with shadow effect
+      
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 42px Arial, sans-serif';
       ctx.textAlign = 'center';
@@ -42,19 +42,19 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 4;
       
-      // Smart title sizing and wrapping
+      
       const title = planName || 'My Weekend Plan';
       const maxTitleWidth = 700;
       let fontSize = 42;
       ctx.font = `bold ${fontSize}px Arial, sans-serif`;
       
-      // Reduce font size if needed
+      
       while (ctx.measureText(title).width > maxTitleWidth && fontSize > 28) {
         fontSize -= 2;
         ctx.font = `bold ${fontSize}px Arial, sans-serif`;
       }
       
-      // Multi-line title if still too long
+      
       const words = title.split(' ');
       const lines = [];
       let currentLine = words[0];
@@ -72,7 +72,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       }
       lines.push(currentLine);
       
-      // Draw title lines
+      
       let titleY = 100;
       const lineHeight = fontSize * 1.2;
       if (lines.length > 1) {
@@ -83,48 +83,48 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         ctx.fillText(line, 400, titleY + (index * lineHeight));
       });
 
-      // Reset shadow
+      
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
 
-      // Theme badge
+      
       const badgeY = titleY + (lines.length * lineHeight) + 20;
       const badgeText = `${theme.toUpperCase()} THEME`;
       ctx.font = '18px Arial, sans-serif';
       const badgeWidth = ctx.measureText(badgeText).width + 40;
       
-      // Badge background
+      
       ctx.fillStyle = 'rgba(255,255,255,0.25)';
       ctx.beginPath();
       ctx.roundRect(400 - badgeWidth/2, badgeY - 15, badgeWidth, 30, 15);
       ctx.fill();
       
-      // Badge text
+      
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       ctx.fillText(badgeText, 400, badgeY + 5);
 
-      // Content area
+      
       let yPos = 360;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#1a1a1a';
 
-      // Group activities by day
+      
       const groupedByDay = scheduleItems.reduce((acc, item) => {
         if (!acc[item.day]) acc[item.day] = [];
         acc[item.day].push(item);
         return acc;
       }, {});
 
-      // Render each day
+      
       Object.entries(groupedByDay).forEach(([day, items]) => {
-        // Day header
+        
         ctx.fillStyle = '#1a1a1a';
         ctx.font = 'bold 32px Arial, sans-serif';
         ctx.fillText(day.charAt(0).toUpperCase() + day.slice(1), 60, yPos);
         
-        // Day underline with theme color
+        
         ctx.strokeStyle = themeColors.start;
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -134,30 +134,30 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         
         yPos += 55;
 
-        // Activities for this day
+        
         items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach((item, index) => {
-          // Card shadow
+          
           ctx.fillStyle = 'rgba(0,0,0,0.05)';
           ctx.beginPath();
           ctx.roundRect(65, yPos - 25, 680, 80, 15);
           ctx.fill();
           
-          // Card background
+          
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
           ctx.roundRect(60, yPos - 30, 680, 80, 15);
           ctx.fill();
           
-          // Card border
+          
           ctx.strokeStyle = '#e5e7eb';
           ctx.lineWidth = 1;
           ctx.stroke();
 
-          // Activity icon with background
+          
           const iconX = 90;
           const iconY = yPos + 10;
           
-          // Icon background circle
+          
           ctx.fillStyle = '#f8fafc';
           ctx.beginPath();
           ctx.arc(iconX, iconY - 15, 25, 0, Math.PI * 2);
@@ -165,22 +165,22 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
           ctx.strokeStyle = '#e2e8f0';
           ctx.stroke();
           
-          // Icon
+          
           ctx.font = '28px Arial, sans-serif';
           ctx.fillStyle = '#1a1a1a';
           ctx.textAlign = 'center';
           ctx.fillText(item.activity?.icon || '📅', iconX, iconY - 5);
 
-          // Activity content
+          
           ctx.textAlign = 'left';
           
-          // Activity name
+          
           ctx.font = 'bold 20px Arial, sans-serif';
           ctx.fillStyle = '#1a1a1a';
           const activityName = item.activity?.name || 'Activity';
           ctx.fillText(activityName, 140, yPos - 8);
           
-          // Activity description
+       
           ctx.font = '15px Arial, sans-serif';
           ctx.fillStyle = '#6b7280';
           const description = item.activity?.description || 'No description';
@@ -190,7 +190,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
             : description;
           ctx.fillText(truncatedDesc, 140, yPos + 15);
           
-          // Time badge
+       
           const timeText = item.startTime || '00:00';
           ctx.font = 'bold 16px Arial, sans-serif';
           const timeMetrics = ctx.measureText(timeText);
@@ -198,21 +198,21 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
           const badgeX = 680 - timeWidth - 20;
           const badgeY = yPos - 18;
           
-          // Time badge background with theme color
+          
           const timeBadgeGradient = ctx.createLinearGradient(badgeX, badgeY, badgeX, badgeY + 28);
-          timeBadgeGradient.addColorStop(0, themeColors.start + '20'); // 20% opacity
+          timeBadgeGradient.addColorStop(0, themeColors.start + '20'); 
           timeBadgeGradient.addColorStop(1, themeColors.end + '20');
           ctx.fillStyle = timeBadgeGradient;
           ctx.beginPath();
           ctx.roundRect(badgeX, badgeY, timeWidth + 20, 28, 14);
           ctx.fill();
           
-          // Time badge border
+          
           ctx.strokeStyle = themeColors.start;
           ctx.lineWidth = 1;
           ctx.stroke();
           
-          // Time text
+          
           ctx.fillStyle = '#374151';
           ctx.textAlign = 'center';
           ctx.fillText(timeText, badgeX + (timeWidth + 20) / 2, badgeY + 19);
@@ -222,7 +222,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         yPos += 30;
       });
 
-      // Footer with decorative line
+      
       const footerY = 1150;
       ctx.strokeStyle = themeColors.start;
       ctx.lineWidth = 2;
@@ -236,7 +236,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       ctx.textAlign = 'center';
       ctx.fillText('Created with Weekendly', 400, footerY);
 
-      // Download the image
+      
       const link = document.createElement("a");
       link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.png`;
       link.href = canvas.toDataURL('image/png', 0.95);
@@ -251,7 +251,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
     }
   };
 
-  // Method 2: SVG Export (Vector graphics, scalable)
+  
   const generateSVGPoster = async () => {
     setGenerating(true);
     try {
@@ -266,7 +266,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
       let activitiesHTML = '';
       
       Object.entries(groupedByDay).forEach(([day, items]) => {
-        // Day header
+        
         activitiesHTML += `
           <text x="60" y="${yPos}" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1a1a1a">
             ${day.charAt(0).toUpperCase() + day.slice(1)}
@@ -276,7 +276,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         yPos += 55;
 
         items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
-          // Activity card
+          
           activitiesHTML += `
             <rect x="60" y="${yPos - 30}" width="680" height="80" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
             <circle cx="90" cy="${yPos + 10 - 15}" r="25" fill="#f8fafc" stroke="#e2e8f0"/>
@@ -338,7 +338,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         </svg>
       `;
 
-      // Download SVG
+      
       const blob = new Blob([svgContent], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -356,7 +356,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
     }
   };
 
-  // Method 3: Print-friendly HTML export
+  
   const generatePrintHTML = async () => {
     setGenerating(true);
     try {
@@ -552,7 +552,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
 </html>
       `;
 
-      // Download HTML file
+      
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -645,7 +645,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
               </div>
             </Button>
             
-            <Button 
+            {/* <Button 
               onClick={generatePrintHTML} 
               disabled={generating} 
               variant="outline"
@@ -656,7 +656,7 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
                 <div className="font-semibold">Print HTML</div>
                 <div className="text-xs opacity-75">Browser printable</div>
               </div>
-            </Button>
+            </Button> */}
           </div>
           
           {generating && (
@@ -669,7 +669,6 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         </CardContent>
       </Card>
       
-      {/* Live Preview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">

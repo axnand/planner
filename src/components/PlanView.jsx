@@ -136,7 +136,6 @@ const PlanView = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b border-card-border bg-surface/80 backdrop-blur-sm">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
@@ -165,7 +164,7 @@ const PlanView = () => {
         </div>
       </header>
 
-      {/* Plan Content */}
+     
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-6">
           {plan.description && (
@@ -174,7 +173,7 @@ const PlanView = () => {
             </Card>
           )}
 
-          {/* Schedule */}
+         
           <div
             className={`grid gap-6 ${
               plan.activeDays.length === 1

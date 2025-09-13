@@ -13,9 +13,9 @@ const HeroSection = () => {
       <div className="container mx-auto md:px-6 px-4 py-12 min-h-screen flex items-center">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-32 items-center w-full">
 
-          {/* Left Content */}
+         
           <div className="space-y-8 sm:text-center lg:text-left">
-            {/* Headline */}
+           
             <h1 className="text-5xl sm:text-5xl lg:text-7xl font-extrabold leading-tight bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-primary to-purple-300">
               Plan Your Perfect
               <span className="block bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
@@ -23,12 +23,12 @@ const HeroSection = () => {
               </span>
             </h1>
 
-            {/* Subheadline */}
+            
             <h2 className="text-sm sm:text-base lg:text-lg font-medium leading-relaxed text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0">
               Choose activities, set the vibe, and create a personalized weekend schedule in minutes.
             </h2>
 
-            {/* CTA Buttons */}
+           
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start lg:items-center">
               <Link href="/weekend-planner">
                 <button
@@ -49,7 +49,7 @@ const HeroSection = () => {
               </Link>
             </div>
 
-            {/* Features Preview */}
+            
             <div className="flex flex-wrap justify-center lg:justify-start gap-8 pt-4">
               <div className="flex items-center space-x-2">
                 <span className="text-2xl"><Calendar1/></span>
@@ -72,10 +72,10 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Illustration */}
+          
           <div className="relative">
             <div className="relative md:p-8 p-6 rounded-3xl bg-white border border-zinc-200 shadow-md dark:bg-zinc-900 dark:border-zinc-800">
-              {/* Calendar Mockup */}
+             
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -88,7 +88,6 @@ const HeroSection = () => {
                   </div>
                 </div>
 
-                {/* Saturday */}
                 <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800">
                   <h4 className="font-semibold mb-3 text-indigo-700 dark:text-indigo-300">
                     Saturday
@@ -109,7 +108,7 @@ const HeroSection = () => {
                   </div>
                 </div>
 
-                {/* Sunday */}
+               
                 <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800">
                   <h4 className="font-semibold mb-3 text-indigo-700 dark:text-indigo-300">
                     Sunday
@@ -131,7 +130,7 @@ const HeroSection = () => {
                 </div>
               </div>
 
-              {/* Floating Activity Icons */}
+             
               <div
                 className="absolute hidden sm:block -top-4 -right-4 text-white p-3 rounded-full shadow-md animate-pulse"
                 style={{ background: "linear-gradient(135deg, #667eea, #764ba2)" }}

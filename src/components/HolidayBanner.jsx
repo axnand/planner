@@ -98,7 +98,7 @@ const HolidayBanner = ({ onPlanLongWeekend }) => {
 
   if (visibleLongWeekends.length === 0) return null;
 
-  const holidayDate = visibleLongWeekends[0]; // Show one toast at a time
+  const holidayDate = visibleLongWeekends[0]; 
   const holiday = upcomingHolidays.find((h) => h.date === holidayDate);
   if (!holiday) return null;
 
