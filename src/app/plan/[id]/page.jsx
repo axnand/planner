@@ -1,7 +1,7 @@
-"use client"; // needed because we're using state/effects
+"use client"; 
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // Next.js App Router hooks
+import { useParams, useRouter } from "next/navigation"; 
 import { ArrowLeft, Calendar, Clock, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 const PlanView = () => {
-   const { id } = useParams(); // dynamic route param
+   const { id } = useParams();
   const router = useRouter();
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -138,7 +138,6 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b border-card-border bg-surface/80 backdrop-blur-sm">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
@@ -167,7 +166,6 @@ useEffect(() => {
         </div>
       </header>
 
-      {/* Plan Content */}
       <main className="container mx-auto px-6 py-8">
         <div className="space-y-6">
           {plan.description && (
@@ -176,7 +174,6 @@ useEffect(() => {
             </Card>
           )}
 
-          {/* Schedule */}
           <div
             className={`grid gap-6 ${
               plan.activeDays.length === 1

@@ -9,14 +9,13 @@ export const generateRandomPlan = (options) => {
     avoidCategories = [],
   } = preferences;
 
-  // Filter activities by theme and preferences
+
   let filteredActivities = activities.filter(
     (activity) =>
       activity.themes.includes(theme) &&
       !avoidCategories.includes(activity.category)
   );
 
-  // Apply indoor/outdoor preferences
   if (preferIndoor !== undefined && preferOutdoor !== undefined) {
     if (preferIndoor && !preferOutdoor) {
       filteredActivities = filteredActivities.filter(
@@ -33,15 +32,14 @@ export const generateRandomPlan = (options) => {
   const scheduleItems = [];
 
   activeDays.forEach((day) => {
-    // Randomly determine how many activities for this day (1 to maxActivitiesPerDay)
+ 
     const activitiesCount = Math.floor(Math.random() * maxActivitiesPerDay) + 1;
 
-    // Shuffle and select time slots
     const shuffledSlots = [...timeSlots].sort(() => Math.random() - 0.5);
     const selectedSlots = shuffledSlots.slice(0, activitiesCount);
 
     selectedSlots.forEach((timeSlot) => {
-      // Get activities suitable for this time slot and mood
+
       let suitableActivities = [...filteredActivities];
 
       if (timeSlot === "morning") {
@@ -59,7 +57,7 @@ export const generateRandomPlan = (options) => {
             activity.category === "social"
         );
       } else {
-        // evening
+       
         suitableActivities = suitableActivities.filter(
           (activity) =>
             activity.mood === "relaxed" ||
@@ -68,12 +66,12 @@ export const generateRandomPlan = (options) => {
         );
       }
 
-      // Fallback if no suitable ones found
+      
       if (suitableActivities.length === 0) {
         suitableActivities = filteredActivities;
       }
 
-      // Select random activity
+   
       const randomActivity =
         suitableActivities[
           Math.floor(Math.random() * suitableActivities.length)
@@ -94,7 +92,7 @@ export const generateRandomPlan = (options) => {
 
         scheduleItems.push(scheduleItem);
 
-        // Remove used activity to avoid duplicates (optional)
+        
         filteredActivities = filteredActivities.filter(
           (a) => a.id !== randomActivity.id
         );

@@ -47,5 +47,5 @@ export function useSchedule() {
   return context;
 }
 
-// Default export for easier importing
+
 export default { ScheduleProvider, useSchedule };

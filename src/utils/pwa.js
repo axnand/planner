@@ -4,7 +4,7 @@ export const registerServiceWorker = async () => {
       const registration = await navigator.serviceWorker.register("/sw.js");
       console.log("Service Worker registered successfully:", registration);
 
-      // Handle updates
+      
       registration.addEventListener("updatefound", () => {
         const newWorker = registration.installing;
         if (newWorker) {
@@ -13,9 +13,9 @@ export const registerServiceWorker = async () => {
               newWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
-              // New version available
+             
               console.log("New app version available!");
-              // You could show a notification to the user here
+             
             }
           });
         }
@@ -60,7 +60,7 @@ export const addOnlineListener = (callback) => {
 };
 
 export const canInstallPWA = () => {
-  // Check if PWA can be installed
+
   return "BeforeInstallPromptEvent" in window;
 };
 

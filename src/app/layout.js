@@ -2,7 +2,6 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Navbar from "@/components/Navbar";
 import LayoutWrapper from "@/components/ui/LayoutWrapper";
 import { Toaster } from "@/components/ui/sonner"
 import ServiceWorkerRegister from "@/context/ServiceWorker";
@@ -15,7 +14,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // 👇 hook must be used inside a client component
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={montserrat.className}>
