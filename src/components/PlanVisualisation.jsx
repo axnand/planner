@@ -8,14 +8,7 @@ import { useTheme } from "next-themes";
 const PlanVisualisation = ({ plan, viewMode }) => {
   const { theme } = useTheme();
   
-  const getThemeColor = (theme) => {
-    switch (theme) {
-      case "lazy": return "hsl(var(--theme-lazy))";
-      case "adventurous": return "hsl(var(--theme-adventurous))";
-      case "family": return "hsl(var(--theme-family))";
-      default: return "hsl(var(--primary))";
-    }
-  };
+
 
   const getMoodEmoji = (mood) => {
     switch (mood) {
@@ -48,7 +41,6 @@ const PlanVisualisation = ({ plan, viewMode }) => {
     count,
   }));
 
-  // High contrast palettes for light/dark mode
   const COLORS_LIGHT = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#9333ea"];
   const COLORS_DARK = ["#60a5fa", "#4ade80", "#facc15", "#f87171", "#c084fc"];
 
@@ -56,9 +48,7 @@ const PlanVisualisation = ({ plan, viewMode }) => {
 
   return (
     <div className="space-y-6 px- sm:px-6 lg:px-8 py-6">
-  {/* Charts Section */}
   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-    {/* Activities by Day Chart */}
     <Card className="border-card-border bg-surface dark:bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-base sm:text-lg dark:text-white">Activities by Day</CardTitle>
@@ -84,7 +74,6 @@ const PlanVisualisation = ({ plan, viewMode }) => {
       </CardContent>
     </Card>
 
-    {/* Activities by Category Chart */}
     <Card className="border-card-border bg-surface dark:bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-base sm:text-lg dark:text-white">Activity Categories</CardTitle>
@@ -120,7 +109,6 @@ const PlanVisualisation = ({ plan, viewMode }) => {
     </Card>
   </div>
 
-  {/* Summary Stats Section */}
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
     <Card className="border-card-border bg-surface dark:bg-neutral-900 p-3 text-center">
       <div className="text-xl sm:text-2xl font-bold text-card-foreground dark:text-white">
@@ -165,7 +153,6 @@ const PlanVisualisation = ({ plan, viewMode }) => {
 }
 
 
-  // Timeline View
   const timeSlots = ["morning", "afternoon", "evening"];
   const sortedDays = plan.activeDays.sort((a, b) => {
     const dayOrder = ["friday", "saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"];
