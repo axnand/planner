@@ -202,7 +202,7 @@ const themeBadgeVariants = {
       <main className="container mx-auto px-6 py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {savedPlans.map(plan => (
-            <Card key={plan.id} className="border-card-border bg-[#171717] hover:shadow-lg transition-shadow">
+            <Card key={plan.id} className="border-card-border dark:bg-[#171717] hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -253,7 +253,7 @@ const themeBadgeVariants = {
                     </DialogTrigger>
                       <DialogPortal>
                        <DialogOverlay className="bg-black/10 backdrop-blur-xl fixed inset-0" />
-                    <DialogContent className="!w-[60vw] !max-w-[90vw] h-[90vh] overflow-y-auto bg-[#101010]" overlayClassName="bg-background/60 backdrop-blur-md">
+                    <DialogContent className="!w-[60vw] !max-w-[90vw] h-[90vh] overflow-y-auto dark:bg-[#101010]" overlayClassName="bg-background/60 backdrop-blur-md">
 
                       <DialogHeader>
                         <DialogTitle>{plan.name}</DialogTitle>
@@ -339,7 +339,7 @@ const themeBadgeVariants = {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setShowDeleteDialog(null)}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => deletePlan(plan.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction onClick={() => deletePlan(plan.id)} className="bg-destructive dark:text-destructive-foreground hover:bg-destructive/90">
                           Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -352,14 +352,16 @@ const themeBadgeVariants = {
         </div>
 
         {savedPlans.length === 0 && (
-          <Card className="p-12 text-center border-card-border bg-surface">
-            <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-medium text-card-foreground">No saved plans yet</h3>
-            <p className="mb-6 text-muted-foreground">Create your first weekend plan to get started</p>
-            <Button onClick={onCreateNew} variant="default">
-              <Plus className="h-4 w-4 mr-2" /> Create Your First Plan
-            </Button>
-          </Card>
+          <div className="w-full flex items-center justify-center mt-20">
+            <Card className="p-12 text-center border-card-border bg-surface">
+              <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <h3 className="mb-2 text-lg font-medium text-card-foreground">No saved plans yet</h3>
+              <p className="mb-6 text-muted-foreground">Create your first weekend plan to get started</p>
+              <Button onClick={onCreateNew} variant="default">
+                <Plus className="h-4 w-4 mr-2" /> Create Your First Plan
+              </Button>
+            </Card>
+          </div>
         )}
       </main>
 

@@ -112,7 +112,7 @@ const HolidayBanner = ({ onPlanLongWeekend }) => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="fixed bottom-4 sm:right-4 z-50 sm:w-full max-w-xs md:max-w-lg lg:max-w-xl"
         >
-          <div className="border border-primary/20  bg-[#171717] rounded-lg shadow-lg">
+          <div className="border border-primary/20  dark:bg-[#171717] bg-[#ffffff] rounded-lg shadow-lg">
             <div className="p-4">
               <div className="flex sm:flex-row flex-col sm:items-center sm:gap-0 gap-2 justify-between">
                 <div className="flex items-center gap-3">

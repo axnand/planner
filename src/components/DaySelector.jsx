@@ -37,19 +37,18 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
 
   const getDayLabel = (day) => day.charAt(0).toUpperCase() + day.slice(1);
 
-  const displayDays = showAllDays ? allDays : allDays.slice(0, 4); // Show Friday–Monday initially
+  const displayDays = showAllDays ? allDays : allDays.slice(0, 4); 
 
   return (
-    <Card className="p-4 border-card-border bg-[#171717]">
+    <Card className="p-4 border-gray-200 bg-white dark:border-zinc-800 dark:bg-[#171717]">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-card-foreground">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-card-foreground">
             Select Days
           </h3>
-          <Calendar className="h-5 w-5 text-muted-foreground" />
+          <Calendar className="h-5 w-5 text-gray-500 dark:text-muted-foreground" />
         </div>
 
-        {/* Quick Presets */}
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
@@ -77,7 +76,6 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
           </Button>
         </div>
 
-        {/* Day Selection */}
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">
             {displayDays.map((day) => (
@@ -107,7 +105,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
               variant="ghost"
               size="sm"
               onClick={() => setShowAllDays(true)}
-              className="text-xs text-muted-foreground"
+              className="text-xs text-gray-500 dark:text-muted-foreground"
             >
               <Plus className="h-3 w-3 mr-1" />
               Show More Days
@@ -115,10 +113,9 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
           )}
         </div>
 
-        {/* Selected Days Summary */}
         {activeDays.length > 0 && (
-          <div className="pt-2 border-t border-card-border">
-            <p className="text-sm text-muted-foreground mb-2">
+          <div className="pt-2 border-t border-gray-200 dark:border-card-border">
+            <p className="text-sm text-gray-500 dark:text-muted-foreground mb-2">
               Selected Days ({activeDays.length}):
             </p>
             <div className="flex flex-wrap gap-1">
@@ -132,6 +129,7 @@ const DaySelector = ({ activeDays, onDaysChange }) => {
         )}
       </div>
     </Card>
+
   );
 };
 

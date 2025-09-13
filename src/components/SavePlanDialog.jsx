@@ -132,7 +132,16 @@ const SavePlanDialog = ({
 
         savedPlans.unshift(newPlan);
         localStorage.setItem("weekendly-saved-plans", JSON.stringify(savedPlans));
-        toast.success(`Plan "${trimmedName}" saved successfully!`);
+        toast.success(
+          <div>
+            Plan "{trimmedName}" saved successfully!{" "}
+            <button
+              onClick={() => router.push("/saved-plans")}
+              className="underline text-primary hover:text-primary/80"
+            >
+              View
+            </button>
+          </div>)
       }
 
       setPlanName("");
@@ -163,7 +172,7 @@ const SavePlanDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 ">
           <div className="space-y-2">
             <Label htmlFor="planName">Plan Name</Label>
             <div className="flex gap-2">
@@ -172,7 +181,7 @@ const SavePlanDialog = ({
                 placeholder="My Amazing Weekend"
                 value={planName}
                 onChange={(e) => setPlanName(e.target.value)}
-                className="flex-1"
+                className="flex-1 text-[13px] sm:text-base"
               />
               <Button variant="outline" size="sm" onClick={handleGenerateName} className="shrink-0">
                 Generate
@@ -188,6 +197,7 @@ const SavePlanDialog = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              className={"w-full text-[13px] sm:text-base"}
             />
           </div>
 

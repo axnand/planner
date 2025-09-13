@@ -73,18 +73,21 @@ export default function WeekendlyNavbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </Button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeSwitcher />
+          <div className="md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -111,9 +114,7 @@ export default function WeekendlyNavbar() {
         <Book className="h-4 w-4"/>
         Saved Plans
       </Link>
-      <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-        <ThemeSwitcher />
-      </div>
+      
     </div>
   </div>
 )}

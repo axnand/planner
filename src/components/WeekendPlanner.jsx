@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
-  ArrowLeft, Plus, Save, Wand2, MapPin, Image as ImageIcon, Menu
+  ArrowLeft, Plus, Save, Wand2, MapPin, Image as ImageIcon, Menu,
+  Book
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ActivityBrowser from "@/components/ActivityBrowser";
@@ -183,99 +184,42 @@ const WeekendPlannerContent = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-background ">
-      {/* Holiday Banner */}
       {!isEditMode && (
         <div className="px-6">
         <HolidayBanner onPlanLongWeekend={handlePlanLongWeekend} />
       </div>
       )}
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-[#171717] backdrop-blur-lg px-4 py-2">
-  <div className="flex items-center justify-between">
-    {/* Left side */}
-    <div className="flex items-center gap-3">
-      <Button variant="ghost" size="icon" onClick={handleBack}>
-        <ArrowLeft className="h-4 w-4" />
-      </Button>
-      <div>
-        <h1 className="text-lg md:text-xl font-semibold text-foreground">
-          {isEditMode ? `Editing: ${editingPlan?.name || "Plan"}` : "Weekend Planner"}
-        </h1>
-        <p className="text-xs md:text-sm text-muted-foreground">
-          {isEditMode ? "Make changes to your saved plan" : "Design your perfect weekend"}
-        </p>
-      </div>
-    </div>
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white backdrop-blur-lg px-4 py-2 dark:border-zinc-800 dark:bg-[#171717]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-foreground">
+                {isEditMode ? `Editing: ${editingPlan?.name || "Plan"}` : "Weekend Planner"}
+              </h1>
+              <p className="text-xs md:text-sm text-gray-500 dark:text-muted-foreground">
+                {isEditMode ? "Make changes to your saved plan" : "Design your perfect weekend"}
+              </p>
+            </div>
+          </div>
 
-    {/* Right side desktop */}
-    <div className="hidden md:flex items-center gap-3 flex-wrap">
-      <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
-
-      <Button variant="outline" onClick={autoGeneratePlan} className="gap-2">
-        <Wand2 className="h-4 w-4" />
-        Auto Generate
-      </Button>
-
-      <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2">
-        <MapPin className="h-4 w-4" />
-        Find Spots
-      </Button>
-
-      <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2">
-        <ImageIcon className="h-4 w-4" />
-        Export Poster
-      </Button>
-
-      <SavePlanDialog
-        scheduleItems={scheduleItems}
-        theme={currentTheme}
-        activeDays={activeDays}
-        editingPlan={editingPlan}
-        isEditMode={isEditMode}
-      >
-        <Button variant="outline" className="gap-2">
-          <Save className="h-4 w-4" />
-          {isEditMode ? "Update Plan" : "Save Plan"}
-        </Button>
-      </SavePlanDialog>
-
-      <Button onClick={() => setShowActivityBrowser(true)} className="gap-2 shadow-sm">
-        <Plus className="h-4 w-4" />
-        Add Activity
-      </Button>
-
-      <ThemeSwitcher />
-    </div>
-
-    {/* Mobile menu trigger + ThemeSelector */}
-    <div className="md:hidden flex items-center gap-2">
-      
-            <ThemeSwitcher />
-      
-      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right" className="w-60 sm:w-80 px-5">
-          <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
-          </SheetHeader>
-          <div className="flex flex-col gap-3 mt-4">
+          <div className="hidden md:flex items-center gap-3 flex-wrap">
             <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
-            <Button variant="outline" onClick={autoGeneratePlan} className="gap-2 w-full">
+
+            <Button variant="outline" onClick={autoGeneratePlan} className="gap-2">
               <Wand2 className="h-4 w-4" />
               Auto Generate
             </Button>
 
-            <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2 w-full">
+            <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2">
               <MapPin className="h-4 w-4" />
               Find Spots
             </Button>
 
-            <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2 w-full">
+            <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2">
               <ImageIcon className="h-4 w-4" />
               Export Poster
             </Button>
@@ -287,26 +231,79 @@ const WeekendPlannerContent = ({ onBack }) => {
               editingPlan={editingPlan}
               isEditMode={isEditMode}
             >
-              <Button variant="outline" className="gap-2 w-full">
+              <Button variant="outline" className="gap-2">
                 <Save className="h-4 w-4" />
                 {isEditMode ? "Update Plan" : "Save Plan"}
               </Button>
             </SavePlanDialog>
 
-            <Button onClick={() => setShowActivityBrowser(true)} className="gap-2 w-full shadow-sm">
-              <Plus className="h-4 w-4" />
-              Add Activity
+           
+            <Button onClick={() => router.push("/saved")} className="gap-2 shadow-sm">
+              <Book className="h-4 w-4" />
+              Saved Plans
             </Button>
 
+            <ThemeSwitcher />
           </div>
-        </SheetContent>
-      </Sheet>
-    </div>
-  </div>
-</header>
- 
 
-      {/* Main */}
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeSwitcher />
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-60 sm:w-80 px-5 bg-white dark:bg-[#171717]">
+                <SheetHeader>
+                  <SheetTitle className="text-gray-900 dark:text-gray-100">Menu</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-3 mt-4">
+                  <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+                  <Button variant="outline" onClick={autoGeneratePlan} className="gap-2 w-full">
+                    <Wand2 className="h-4 w-4" />
+                    Auto Generate
+                  </Button>
+
+                  <Button variant="outline" onClick={() => setShowSmartIntegrations(true)} className="gap-2 w-full">
+                    <MapPin className="h-4 w-4" />
+                    Find Spots
+                  </Button>
+
+                  <Button variant="outline" onClick={() => setShowPosterGenerator(true)} className="gap-2 w-full">
+                    <ImageIcon className="h-4 w-4" />
+                    Export Poster
+                  </Button>
+
+                  <SavePlanDialog
+                    scheduleItems={scheduleItems}
+                    theme={currentTheme}
+                    activeDays={activeDays}
+                    editingPlan={editingPlan}
+                    isEditMode={isEditMode}
+                  >
+                    <Button variant="outline" className="gap-2 w-full">
+                      <Save className="h-4 w-4" />
+                      {isEditMode ? "Update Plan" : "Save Plan"}
+                    </Button>
+                  </SavePlanDialog>
+                  <Button onClick={() => router.push("/saved")} className="gap-2 shadow-sm">
+                    <Book className="h-4 w-4" />
+                    Saved Plans
+                  </Button>
+
+                  <Button onClick={() => setShowActivityBrowser(true)} className="gap-2 w-full shadow-sm">
+                    <Plus className="h-4 w-4" />
+                    Add Activity
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </header>
+
       <main className="container mx-auto md:px-10 px-5 py-15 space-y-20">
         <DaySelector activeDays={activeDays} onDaysChange={setActiveDays} />
 

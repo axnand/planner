@@ -44,12 +44,10 @@ const ActivityBrowser = ({ onAddActivity, onClose, theme, activeDays = ["saturda
   }
 
   const handleActivitySelect = (activity) => {
-    // If we have a selectedSlot (from plus button inside timeslot), add directly
     if (selectedSlot) {
       onAddActivity(activity, selectedSlot.day, selectedSlot.timeSlot)
       return
     }
-    // Otherwise, show the modal to select day/time
     setSelectedActivity(activity)
   }
 
