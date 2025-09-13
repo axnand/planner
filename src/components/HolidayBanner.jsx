@@ -110,32 +110,32 @@ const HolidayBanner = ({ onPlanLongWeekend }) => {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-4 right-4 z-50 w-full max-w-md md:max-w-lg lg:max-w-xl"
+          className="fixed bottom-4 sm:right-4 z-50 sm:w-full max-w-xs md:max-w-lg lg:max-w-xl"
         >
-          <div className="border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg shadow-lg">
+          <div className="border border-primary/20  bg-[#171717] rounded-lg shadow-lg">
             <div className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex sm:flex-row flex-col sm:items-center sm:gap-0 gap-2 justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-full bg-primary/20">
                     <Sparkles className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground">
+                    <div className="flex sm:flex-row flex-col sm:items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-sm sm:text-base text-foreground">
                         Long Weekend Coming Up!
                       </h3>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="sm:text-xs text-[10px]">
                         {holiday.localName}
                       </Badge>
                     </div>
-                    <p className="text-[13px] text-muted-foreground mr-5">
+                    <p className="sm:text-[13px] text-[11px] text-muted-foreground mr-5">
                       {formatLongWeekendDates(holidayDate)} - Want to plan
                       something special?
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {pathname!=='/weekend-planner' && <Button size="sm" onClick={onPlanLongWeekend} className="gap-2">
+                <div className="flex  items-center gap-2 ">
+                  {pathname!=='/weekend-planner' && <Button size="sm" onClick={onPlanLongWeekend} className="sm:gap-2 gap-1 sm:text-base text-xs">
                     <Calendar className="h-4 w-4" />
                     Plan
                   </Button>}
@@ -143,8 +143,17 @@ const HolidayBanner = ({ onPlanLongWeekend }) => {
                     size="sm"
                     variant="ghost"
                     onClick={() => dismissBanner(holidayDate)}
+                    className={"hidden sm:block"}
                   >
-                    <X className="h-4 w-4" />
+                    <X className="sm:h-4 sm:w-4 h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => dismissBanner(holidayDate)}
+                    className={" sm:hidden"}
+                  >
+                    Close
                   </Button>
                 </div>
               </div>
