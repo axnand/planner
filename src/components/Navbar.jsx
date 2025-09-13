@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
 import ThemeSwitcher from "./ThemeSwitcher"
-import { PlusCircleIcon, Menu, X, Book } from "lucide-react"
+import { PlusCircleIcon, Menu, X, Book, CalendarHeart, Calendar1Icon, Calendar } from "lucide-react"
 
 const savedPlans = [
   { title: "Plan 1", href: "/saved/plan1" },
@@ -33,7 +33,7 @@ export default function WeekendlyNavbar() {
           <span className="bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
             Weekendly
           </span>
-          <span>✨</span>
+          <Calendar className="text-purple-400" />
         </Link>
 
         

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Calendar1, CloudLightningIcon, MoonStar, Book } from 'lucide-react';
+import { Calendar1, CloudLightningIcon, MoonStar, Book, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 
@@ -18,9 +18,12 @@ const HeroSection = () => {
            
             <h1 className="text-5xl sm:text-5xl lg:text-7xl font-extrabold leading-tight bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-primary to-purple-300">
               Plan Your Perfect
-              <span className="block bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
-                Weekend ✨
-              </span>
+              <div className='flex items-center gap-4'>
+                <span className="block bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
+                  Weekend
+                </span>
+                <Calendar className="text-purple-500 h-[70px] w-[70px]"/>
+              </div>
             </h1>
 
             
