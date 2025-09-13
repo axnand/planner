@@ -1,19 +1,22 @@
+'use client'
 import { useState, useEffect } from "react";
 import { Calendar, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const HolidayBanner = ({ onPlanLongWeekend }) => {
   const [upcomingHolidays, setUpcomingHolidays] = useState([]);
   const [longWeekends, setLongWeekends] = useState([]);
-const [dismissed, setDismissed] = useState([]);
+  const [dismissed, setDismissed] = useState([]);
+  const [show, setShow] = useState(true); 
+  const pathname = usePathname();
 
-useEffect(() => {
-  const stored = localStorage.getItem("dismissedHolidayBanners");
-  setDismissed(stored ? JSON.parse(stored) : []);
-}, []);
-
+  useEffect(() => {
+    const stored = localStorage.getItem("dismissedHolidayBanners");
+    setDismissed(stored ? JSON.parse(stored) : []);
+  }, []);
 
   useEffect(() => {
     fetchHolidays();
@@ -27,7 +30,6 @@ useEffect(() => {
       );
       const holidays = await response.json();
 
-      // Filter upcoming holidays (next 3 months)
       const now = new Date();
       const threeMonthsFromNow = new Date();
       threeMonthsFromNow.setMonth(now.getMonth() + 3);
@@ -39,7 +41,6 @@ useEffect(() => {
 
       setUpcomingHolidays(upcoming);
 
-      // Check for long weekends (Mon or Fri holidays)
       const longWeekendDates = upcoming
         .filter((holiday) => {
           const holidayDate = new Date(holiday.date);
@@ -59,7 +60,6 @@ useEffect(() => {
     const dayOfWeek = date.getDay();
 
     if (dayOfWeek === 1) {
-      // Monday holiday
       const saturday = new Date(date);
       saturday.setDate(date.getDate() - 2);
       return `${saturday.toLocaleDateString("en-US", {
@@ -70,7 +70,6 @@ useEffect(() => {
         day: "numeric",
       })} (Sat-Mon)`;
     } else {
-      // Friday holiday
       const sunday = new Date(date);
       sunday.setDate(date.getDate() + 2);
       return `${date.toLocaleDateString("en-US", {
@@ -90,6 +89,7 @@ useEffect(() => {
       "dismissedHolidayBanners",
       JSON.stringify(newDismissed)
     );
+    setShow(false);
   };
 
   const visibleLongWeekends = longWeekends.filter(
@@ -98,18 +98,22 @@ useEffect(() => {
 
   if (visibleLongWeekends.length === 0) return null;
 
-  return (
-    <div className="space-y-3">
-      {visibleLongWeekends.map((holidayDate) => {
-        const holiday = upcomingHolidays.find((h) => h.date === holidayDate);
-        if (!holiday) return null;
+  const holidayDate = visibleLongWeekends[0]; // Show one toast at a time
+  const holiday = upcomingHolidays.find((h) => h.date === holidayDate);
+  if (!holiday) return null;
 
-        return (
-          <Card
-            key={holidayDate}
-            className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
-          >
-            <CardContent className="p-4">
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ x: "100%", opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: "100%", opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed bottom-4 right-4 z-50 w-full max-w-md md:max-w-lg lg:max-w-xl"
+        >
+          <div className="border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg shadow-lg">
+            <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-full bg-primary/20">
@@ -124,17 +128,17 @@ useEffect(() => {
                         {holiday.localName}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      ✨ {formatLongWeekendDates(holidayDate)} - Want to plan
+                    <p className="text-[13px] text-muted-foreground mr-5">
+                      {formatLongWeekendDates(holidayDate)} - Want to plan
                       something special?
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button size="sm" onClick={onPlanLongWeekend} className="gap-2">
+                  {pathname!=='/weekend-planner' && <Button size="sm" onClick={onPlanLongWeekend} className="gap-2">
                     <Calendar className="h-4 w-4" />
-                    Plan Weekend
-                  </Button>
+                    Plan
+                  </Button>}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -144,11 +148,11 @@ useEffect(() => {
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

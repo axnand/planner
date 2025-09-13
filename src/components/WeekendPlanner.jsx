@@ -183,9 +183,9 @@ const WeekendPlannerContent = ({ onBack }) => {
     <div className="min-h-screen bg-background ">
       {/* Holiday Banner */}
       {!isEditMode && (
-        <div className="px-6 ">
-          <HolidayBanner onPlanLongWeekend={handlePlanLongWeekend} />
-        </div>
+        <div className="px-6">
+        <HolidayBanner onPlanLongWeekend={handlePlanLongWeekend} />
+      </div>
       )}
 
       {/* Header */}
