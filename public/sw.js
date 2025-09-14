@@ -1,7 +1,6 @@
 const CACHE_NAME = 'weekendly-v1';
 const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
   '/favicon.ico',
   // Add other static assets as needed
 ];
@@ -9,17 +8,14 @@ const STATIC_ASSETS = [
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => {
-        console.log('Service worker installed');
-        return self.skipWaiting();
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        STATIC_ASSETS.map((url) => cache.add(url))
+      );
+    }).then(() => self.skipWaiting())
   );
 });
+
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
@@ -44,63 +40,37 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
     caches.match(event.request)
       .then((cachedResponse) => {
-        // Return cached version if available
         if (cachedResponse) {
-          // For HTML pages, try to fetch fresh version in background
           if (event.request.destination === 'document') {
             event.waitUntil(
               fetch(event.request)
                 .then((response) => {
                   if (response.ok) {
                     return caches.open(CACHE_NAME)
-                      .then((cache) => {
-                        cache.put(event.request, response.clone());
-                      });
+                      .then((cache) => cache.put(event.request, response.clone()));
                   }
                 })
-                .catch(() => {
-                  // Network failed, use cached version
-                })
+                .catch(() => {})
             );
           }
           return cachedResponse;
         }
 
-        // No cached version, try network
         return fetch(event.request)
           .then((response) => {
-            // Don't cache non-successful responses
-            if (!response.ok) {
-              return response;
-            }
+            if (!response.ok) return response;
 
-            // Clone the response before caching
             const responseToCache = response.clone();
-
-            // Cache successful responses
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
             return response;
           })
           .catch(() => {
-            // Network failed and no cache available
-            // Return a custom offline page for HTML requests
             if (event.request.destination === 'document') {
               return new Response(
                 `<!DOCTYPE html>
@@ -146,18 +116,15 @@ self.addEventListener('fetch', (event) => {
                   </div>
                 </body>
                 </html>`,
-                {
-                  headers: { 'Content-Type': 'text/html' }
-                }
+                { headers: { 'Content-Type': 'text/html' } }
               );
             }
-            
-            // For other requests, just fail
             throw new Error('Network failed and no cache available');
           });
       })
   );
 });
+
 
 // Background sync for future enhancements
 self.addEventListener('sync', (event) => {
