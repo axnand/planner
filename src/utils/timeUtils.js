@@ -1,7 +1,8 @@
-export const parseTime = (timeStr) => {
+export const parseTime = (timeStr = "00:00") => {
   const [hours, minutes] = timeStr.split(':').map(Number);
   return hours * 60 + minutes;
 };
+
 
 export const formatTime = (minutes) => {
   const hours = Math.floor(minutes / 60);
