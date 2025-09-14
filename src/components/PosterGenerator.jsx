@@ -482,14 +482,14 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
         </CardHeader>
         {showPreview && (
           <CardContent>
-            <div className="border rounded-lg p-4 bg-gray-50" style={{ 
+            <div className="border rounded-lg p-4 bg-gray-50 overflow-y-auto" style={{ 
               width: '400px', 
               height: '600px', 
               margin: '0 auto',
               background: `linear-gradient(135deg, ${getThemeGradientColors().start}20, ${getThemeGradientColors().end}20)`
             }}>
               <div className="text-center mb-4">
-                <h3 className="text-xl font-bold">{planName || "My Weekend Plan"}</h3>
+                <h3 className="text-xl font-bold text-center">{planName || "My Weekend Plan"}</h3>
                 <div className="text-sm bg-white/50 rounded px-2 py-1 inline-block mt-2">
                   {theme.toUpperCase()} THEME
                 </div>
@@ -500,17 +500,19 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
                   acc[item.day].push(item);
                   return acc;
                 }, {})).map(([day, items]) => (
-                  <div key={day} className="border-l-2 border-blue-500 pl-3">
-                    <h4 className="font-semibold text-sm capitalize">{day}</h4>
+                  <div key={day} className="border-l-2 pl-3" style={{ borderLeftColor: getThemeGradientColors().start }}>
+                    <h4 className="font-semibold text-sm capitalize text-left">{day}</h4>
                     {items.slice(0, 2).map((item, i) => (
-                      <div key={i} className="text-xs bg-white/70 rounded p-2 mt-1">
-                        <span className="mr-2">{item.activity?.icon}</span>
-                        <span className="font-medium">{item.activity?.name}</span>
-                        <span className="float-right text-gray-600">{item.startTime}</span>
+                      <div key={i} className="text-xs bg-white/70 rounded p-2 mt-1 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <span className="mr-2">{item.activity?.icon}</span>
+                          <span className="font-medium">{item.activity?.name}</span>
+                        </div>
+                        <span className="text-gray-600 ml-2">{item.startTime}</span>
                       </div>
                     ))}
                     {items.length > 2 && (
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-500 mt-1 text-left">
                         +{items.length - 2} more activities
                       </div>
                     )}
