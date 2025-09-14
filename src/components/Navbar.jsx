@@ -19,6 +19,17 @@ const savedPlans = [
   { title: "Plan 2", href: "/saved/plan2" },
 ]
 
+const AppLogo = () => (
+  <div className="flex items-center gap-2">
+    <div className="w-8 h-8 rounded-lg bg-indigo-500 shadow-lg flex items-center justify-center">
+      <div className="w-4 h-4 rounded-full bg-white transition-transform transform group-hover:scale-110"></div>
+    </div>
+    <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+      Weekendly
+    </span>
+  </div>
+);
+
 export default function WeekendlyNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
@@ -30,10 +41,7 @@ export default function WeekendlyNavbar() {
           href="/"
           className="text-2xl font-bold flex items-center space-x-1"
         >
-          <span className="bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
-            Weekendly
-          </span>
-          <Calendar className="text-purple-400" />
+         <AppLogo />
         </Link>
 
         
@@ -44,7 +52,7 @@ export default function WeekendlyNavbar() {
                 <NavigationMenuLink asChild>
                   <Link
                     href="/weekend-planner"
-                    className="px-2 font-medium flex-row gap-2 items-center py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300 flex"
+                    className="px-2 font-medium flex-row gap-2 items-center py-2 rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-300 flex"
                   >
                     <PlusCircleIcon className="h-4 w-4 mr-1" />
                     <span>Create New Plan</span>
@@ -55,7 +63,7 @@ export default function WeekendlyNavbar() {
                 <NavigationMenuLink asChild>
                   <Link
                     href="/saved"
-                    className="px-2 font-medium py-2 flex-row items-center rounded-md text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
+                    className="px-2 font-medium py-2 flex-row items-center rounded-md text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-300"
                   >
                     <Book className="h-4 w-4 mr-1" />
                     <span>Saved Plans</span>
@@ -100,7 +108,7 @@ export default function WeekendlyNavbar() {
     <div className="flex flex-col p-4 space-y-4">
       <Link
         href="/weekend-planner"
-        className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
+        className="flex items-center gap-2 text-zinc-700 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-300"
         onClick={() => setMobileMenuOpen(false)}
       >
         <PlusCircleIcon className="h-4 w-4" />
@@ -108,7 +116,7 @@ export default function WeekendlyNavbar() {
       </Link>
       <Link
         href="/saved"
-        className="text-zinc-700 flex items-center gap-2 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-purple-300"
+        className="text-zinc-700 flex items-center gap-2 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-300"
         onClick={() => setMobileMenuOpen(false)}
       >
         <Book className="h-4 w-4"/>

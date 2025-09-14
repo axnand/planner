@@ -16,13 +16,15 @@ const HeroSection = () => {
          
           <div className="space-y-8 sm:text-center lg:text-left">
            
-            <h1 className="text-5xl sm:text-5xl lg:text-7xl font-extrabold leading-tight bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-primary to-purple-300">
+            <h1 className="text-5xl sm:text-5xl lg:text-7xl font-extrabold leading-tight bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-primary to-indigo-300">
               Plan Your Perfect
               <div className='flex items-center gap-4'>
-                <span className="block bg-clip-text text-transparent tracking-tight bg-gradient-to-r from-pink-400 to-purple-700">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-indigo-500">
                   Weekend
                 </span>
-                <Calendar className="text-purple-500 h-[70px] w-[70px]"/>
+                <div className="w-14 h-14 rounded-lg bg-indigo-500 shadow-lg flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-white transition-transform transform group-hover:scale-110"></div>
+                </div>
               </div>
             </h1>
 
@@ -35,7 +37,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start lg:items-center">
               <Link href="/weekend-planner">
                 <button
-                  className="px-6 sm:px-8 py-3 text-sm sm:text-[15px] bg-gradient-to-r from-indigo-600 to-purple-500 flex items-center gap-2 cursor-pointer text-white font-medium rounded-lg hover:from-indigo-700 hover:to-purple-600 transition-all duration-200 shadow-md w-full sm:w-auto justify-center"
+                  className="px-6 sm:px-8 py-3 text-sm sm:text-[15px] bg-gradient-to-r from-teal-500 to-indigo-500 flex items-center gap-2 cursor-pointer text-white font-medium rounded-lg hover:from-teal-700 hover:to-indigo-600 transition duration-200 shadow-md w-full sm:w-auto justify-center"
                 >
                   <Calendar1 className='h-5 w-5'/>
                   Start Planning
@@ -44,7 +46,7 @@ const HeroSection = () => {
               <Link href="/saved" className="w-full sm:w-auto">
                 <Button 
                   variant="outline" 
-                  className="px-6 sm:px-8 py-3 w-full sm:w-auto cursor-pointer flex items-center gap-2 justify-center"
+                  className="px-6 sm:px-8 py-[22px] w-full sm:w-auto cursor-pointer flex items-center gap-2 justify-center"
                 >
                   <Book className="h-4 w-4" />
                   Saved Plans
@@ -131,28 +133,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-             
-              <div
-                className="absolute hidden sm:block -top-4 -right-4 text-white p-3 rounded-full shadow-md animate-pulse"
-                style={{ background: "linear-gradient(135deg, #667eea, #764ba2)" }}
-              >
-                🎨
-              </div>
-
-              <div
-                className="absolute hidden sm:block -bottom-4 -left-4 text-white p-3 rounded-full shadow-md animate-pulse delay-1000"
-                style={{ background: "linear-gradient(135deg, #4facfe, #00f2fe)" }}
-              >
-                🏊‍♀️
-              </div>
-
-              <div
-                className="absolute hidden sm:block top-1/2 -left-8 text-white p-2 rounded-full shadow-md animate-bounce"
-                style={{ background: "linear-gradient(135deg, #f093fb, #f5576c)" }}
-              >
-                🚴‍♂️
               </div>
 
             </div>

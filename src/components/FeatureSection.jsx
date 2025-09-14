@@ -59,7 +59,7 @@ export default function FeatureSection() {
     <section className="px-6 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <h2 className="text-5xl mb-4 font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-5xl mb-4 font-extrabold tracking-tight bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
             Three Ways to Plan
           </h2>
           <p className="text-lg text-muted-foreground">

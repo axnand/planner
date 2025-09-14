@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Weekendly 🌟
 
-## Getting Started
+**Weekendly** is an interactive, intelligent, and visually engaging web application that helps users plan their weekends — or even long weekends — in an easy, fun, and personalized way. Built using **Next.js**, **shadcn/ui**, and integrated with multiple external APIs, Weekendly offers a seamless experience with smart recommendations, offline access, and export options.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Live Demo  
+Check out the working application here:  
+**[Deployment Link](https://your-deployment-url.vercel.app/)**
+
+---
+
+## 🎥 Video Walkthrough  
+Watch a detailed explanation of the app, its features, and engineering decisions:  
+**[Video Explanation Link](https://your-video-link.com/)**
+
+---
+
+## 📋 Features
+
+### ✅ Core Features
+- ✅ Browse from a curated list of activities (brunch, hiking, movie night, reading, etc.)
+- ✅ Find nearby restaurants and events using **Google Places API**
+- ✅ Get weather-based suggestions using **OpenWeather API**
+- ✅ Plan weekends based on how many days you want (weekend, long weekend, or full week)
+- ✅ Smart notifications about upcoming public holidays and long weekends
+- ✅ Drag-and-drop interface to easily arrange activities in the schedule
+- ✅ Edit or remove activities with intuitive controls
+- ✅ Smart timeline suggestions with conflict detection (e.g. overlapping activities or invalid schedules)
+- ✅ Automated curated planner based on activity selection and timeline
+- ✅ Save plans and access them later from localStorage or IndexedDB
+- ✅ View saved plans as timelines, charts, and graphs with insights
+- ✅ Export plans as SVG images, posters, or PDFs
+
+### ✅ Bonus Features
+- ✅ Personalized themes (lazy, adventurous, family) with unique colors and activity suggestions
+- ✅ Mood tracking with vibes assigned to activities (happy, relaxed, energetic)
+- ✅ Share/export plans with friends and family
+- ✅ Visual richness with icons, images, and color-coded categories
+
+### ✅ Super Stretch Features
+- ✅ Offline-friendly Progressive Web App (PWA) — accessible even without internet
+- ✅ Efficient performance for handling 50+ activities
+- ✅ Unit/component testing included for base functionality
+- ✅ Clean component architecture and reusable UI with **shadcn/ui**
+- ✅ Semantic HTML with accessibility features (ARIA attributes, keyboard navigation)
+- ✅ Best practices followed in Next.js folder structure and state management
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework:** Next.js
+- **UI Library:** shadcn/ui
+- **APIs Used:**  
+  - OpenWeather API – for weather-based activity suggestions  
+  - Google Places API – for nearby restaurants and events  
+  - Public Holiday API – for holiday and long weekend suggestions
+- **Storage:** localStorage, IndexedDB
+- **Export Options:** SVG, poster, PDF
+- **PWA Support:** Service workers, offline compatibility
+- **State Management:** [Your method here — e.g. React Context, Zustand, etc.]
+- **Testing:** Unit/component tests included
+- **Deployment:** Vercel / Netlify
+
+---
+
+## 📂 Folder Structure (Next.js Best Practices)
+
+```
+/app
+/components
+/hooks
+/services
+/utils
+/public
+/styles
+/tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Modular, reusable components
+- Clean separation of concerns
+- Scalable for future extensions
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙ Getting Started
 
-## Learn More
+### Prerequisites
+- Node.js (v16+)
+- npm or yarn
 
-To learn more about Next.js, take a look at the following resources:
+### Installation
+```bash
+git clone https://github.com/your-username/weekendly.git
+cd weekendly
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Build for Production
+```bash
+npm run build
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📖 Documentation Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- All UI components are accessible, responsive, and optimized for performance
+- State management ensures smooth updates and avoids unnecessary renders
+- Offline fallback is implemented using service workers and IndexedDB
+- Themes are customizable with clear visual distinctions
+- Activity conflicts are validated to ensure realistic planning
+- Automated planner generates smart suggestions based on selected activities
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ✅ Testing
+
+Unit and component tests are included for:
+- Activity selection workflows
+- Timeline arrangement and conflict warnings
+- Saving/loading plans
+- Offline mode fallback rendering
+
+Run tests with:
+```bash
+npm test
+```
+
+---
+
+## 📢 Contribute / Feedback
+
+Feel free to fork the repository, suggest improvements, or report issues. Weekendly is built to be open, intuitive, and user-focused — your contributions are welcome!
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+Thank you for checking out **Weekendly**! ✨ Plan smarter, explore nearby spots, and make every weekend count.
+
+---
+
+### ✅ Notes:
+1. Replace placeholders like `https://your-deployment-url.vercel.app/`, `https://your-video-link.com/`, and your GitHub URL before publishing.
+2. Fill in the state management method you used.
+3. Optionally include screenshots or GIFs in the README if you want it to be even more visually appealing.
+
+**Want to enhance this README further?**
+- Add markdown badges (like Vercel, Netlify, or license badges)
+- Include example screenshots
+- Fill in all the placeholder links once available

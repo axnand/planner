@@ -40,7 +40,7 @@ export default function Features(){
         <section className="px-6 py-20 bg-gradient-to-b from-white via-gray-100/20 to-white dark:from-background dark:via-muted/20 dark:to-background">
   <div className="mx-auto max-w-7xl">
     <div className="mb-16 text-center space-y-4">
-      <h2 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+      <h2 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
         All-in-One Weekend Planner
       </h2>
       <p className="text-lg text-muted-foreground max-w-2xl mx-auto dark:text-gray-400">
@@ -54,7 +54,7 @@ export default function Features(){
           key={i}
           className="group relative border overflow-hidden bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/40 rounded-2xl dark:bg-[#101010] dark:border-gray-700"
         >
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 dark:from-primary/5 dark:to-purple-200/10" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 dark:from-primary/5 dark:to-indigo-200/10" />
 
           <div className="relative space-y-4">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 group-hover:scale-110 transition-transform duration-300 dark:bg-primary/20">
