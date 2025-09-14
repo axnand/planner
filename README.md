@@ -6,7 +6,7 @@
 
 ## 🚀 Live Demo  
 Check out the working application here:  
-**[Deployment Link](https://your-deployment-url.vercel.app/)**
+**[Deployment Link](https://weekend-planner-nine.vercel.app/)**
 
 ---
 
@@ -119,11 +119,12 @@ npm run start
 
 ## ✅ Testing
 
-Unit and component tests are included for:
-- Activity selection workflows
-- Timeline arrangement and conflict warnings
-- Saving/loading plans
-- Offline mode fallback rendering
+Weekendly includes basic testing to ensure key components render as expected and workflows function correctly. Currently, the testing setup covers:
+
+- Rendering of core UI components like the schedule header.
+- Mocking navigation functionality using `next/navigation`.
+- Verifying component behavior with provided props.
+
 
 Run tests with:
 ```bash
