@@ -132,7 +132,7 @@ const validateItemTimeSlot = (item) => {
     <div className="space-y-10">
       
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Your Weekend Schedule</h2>
+        <h2 data-testid="schedule-header" className="text-2xl font-bold text-foreground mb-2">Your Weekend Schedule</h2>
         <p className="text-muted-foreground">
           Drag and drop activities to reorganize your perfect weekend
         </p>
