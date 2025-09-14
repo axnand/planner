@@ -275,6 +275,7 @@ const SmartIntegrations = ({ onAddActivity, onClose, theme, currentLocation }) =
 
     onAddActivity(activity);
     toast.success(`Added "${suggestion.name}" to your plan!`);
+    onClose();
   };
 
   const saveApiKey = (key, value) => {

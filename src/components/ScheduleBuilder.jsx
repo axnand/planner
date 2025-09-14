@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
-import { Plus, Calendar, Clock, Edit, Trash2, GripVertical, Book } from "lucide-react"
+import { Plus, Calendar, Clock, Edit, Trash2, GripVertical, AlertTriangle, Edit2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { timeRangesOverlap, isTimeInSlot, getTimeSlotBoundaries } from "@/utils/timeUtils"
 import { useRouter } from "next/navigation"
+import TimeRangePicker from "@/components/TimeRangePicker";
 import {
   ArrowLeft,
   Save,
@@ -39,11 +42,15 @@ const ScheduleBuilder = ({
   setShowPosterGenerator,             
 }) => {
   const [isMounted, setIsMounted] = useState(false)
+  const [editingTimeForItem, setEditingTimeForItem] = useState(null);
+
+
   const router = useRouter();
 
   useEffect(() => setIsMounted(true), [])
 
-  const timeSlots = ["morning", "afternoon", "evening"]
+  const timeSlots = ["morning", "afternoon", "evening"];
+
 
   const getThemeColor = () => {
   switch (theme) {
@@ -60,13 +67,38 @@ const ScheduleBuilder = ({
 
 
   const getTimeSlotLabel = (timeSlot) => {
-    switch (timeSlot) {
-      case "morning": return "Morning";
-      case "afternoon": return "Afternoon";
-      case "evening": return "Evening";
-      default: return timeSlot;
-    }
-  };
+  switch (timeSlot) {
+    case "morning": return "Morning";
+    case "afternoon": return "Afternoon";
+    case "evening": return "Evening";
+    default: return timeSlot;
+  }
+};
+const getConflictingItems = (item) => {
+  return scheduleItems.filter(otherItem => 
+    otherItem.id !== item.id &&
+    otherItem.day === item.day &&
+    timeRangesOverlap(item.startTime, item.endTime, otherItem.startTime, otherItem.endTime)
+  );
+};
+
+const hasTimeConflicts = (item) => {
+  return getConflictingItems(item).length > 0;
+};
+
+const handleTimeChange = (itemId, startTime, endTime) => {
+  onUpdateItem(itemId, { startTime, endTime });
+  setEditingTimeForItem(null);
+};
+
+
+const validateItemTimeSlot = (item) => {
+  return isTimeInSlot(item.startTime, item.timeSlot);
+};
+
+
+
+
 
   const getItemsForDayAndSlot = (day, slot) =>
     scheduleItems.filter(item => item.day === day && item.timeSlot === slot)
@@ -105,6 +137,35 @@ const ScheduleBuilder = ({
           Drag and drop activities to reorganize your perfect weekend
         </p>
       </div>
+      {scheduleItems.some(hasTimeConflicts) && (
+        <Alert className="border-destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Some activities have overlapping times. Click on the time ranges to adjust them.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {editingTimeForItem && (
+  <div className="fixed inset-0 bg-black/50 h-full flex items-center justify-center z-50 p-4">
+    <div className="w-full max-w-md">
+      {(() => {
+        const item = scheduleItems.find(item => item.id === editingTimeForItem);
+        return item ? (
+          <TimeRangePicker
+            startTime={item.startTime}
+            endTime={item.endTime}
+            estimatedTime={item.activity.estimatedTime}
+            timeSlot={item.timeSlot}
+            onTimeChange={(startTime, endTime) => handleTimeChange(item.id, startTime, endTime)}
+            onClose={() => setEditingTimeForItem(null)}
+          />
+        ) : null;
+      })()}
+    </div>
+  </div>
+)}
+
       
       <div className="flex justify-end gap-3">
         <SavePlanDialog
@@ -167,6 +228,8 @@ const ScheduleBuilder = ({
                         <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">
                           {getTimeSlotLabel(timeSlot)}
                         </h4>
+
+
                         <div className="flex items-center gap-2">
                           {onAddActivityToSlot && (
                             <Button
@@ -227,12 +290,25 @@ const ScheduleBuilder = ({
                                                 {getMood(item.mood || "relaxed")}
                                               </span>
                                             </div>
-                                            <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-muted-foreground">
-                                              <span>{item.startTime || "TBD"}</span>
-                                              <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                                                {item.activity?.category || "general"}
-                                              </Badge>
-                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                               <button
+                                                 onClick={() => setEditingTimeForItem(item.id)}
+                                                 className="hover:text-foreground flex gap-1 items-center transition-colors cursor-pointer"
+                                               >
+                                                 <Edit className="w-3 h-3"/><span>{item.startTime} - {item.endTime}</span>
+                                               </button>
+                                               <Badge variant="secondary" className="text-xs">
+                                                 {item.activity.category}
+                                               </Badge>
+                                               {hasTimeConflicts(item) && (
+                                                 <AlertTriangle className="h-3 w-3 text-destructive" />
+                                               )}
+                                               {!validateItemTimeSlot(item) && (
+                                                 <Badge variant="destructive" className="text-xs">
+                                                   Wrong slot
+                                                 </Badge>
+                                               )}
+                                             </div>
                                           </div>
 
                                           <Button

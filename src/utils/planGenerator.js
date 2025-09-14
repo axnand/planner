@@ -1,4 +1,5 @@
 import { activities } from "@/data/activities";
+import { getDefaultEndTime } from "@/utils/timeUtils";
 
 export const generateRandomPlan = (options) => {
   const { theme, activeDays, preferences = {} } = options;
@@ -78,6 +79,8 @@ export const generateRandomPlan = (options) => {
         ];
 
       if (randomActivity) {
+        const startTime = getRandomTimeForSlot(timeSlot);
+        const endTime = getDefaultEndTime(startTime, randomActivity.estimatedTime);
         const scheduleItem = {
           id: `auto-${Date.now()}-${Math.random()
             .toString(36)
@@ -85,7 +88,8 @@ export const generateRandomPlan = (options) => {
           activity: randomActivity,
           day,
           timeSlot,
-          startTime: getRandomTimeForSlot(timeSlot),
+          startTime,
+          endTime,
           mood: randomActivity.mood,
           notes: generateRandomNote(randomActivity, theme),
         };

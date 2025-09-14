@@ -24,6 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import ThemeSwitcher from "./ThemeSwitcher";
+import { getDefaultEndTime } from "@/utils/timeUtils";
 
 
 const WeekendPlannerContent = ({ onBack }) => {
@@ -43,6 +44,9 @@ const WeekendPlannerContent = ({ onBack }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [customStartTime, setCustomStartTime] = useState("");
+  const [customEndTime, setCustomEndTime] = useState("");
+
 
 
   useEffect(() => {
@@ -122,28 +126,36 @@ const WeekendPlannerContent = ({ onBack }) => {
   };
 
   const getDefaultTime = (slot) => {
-    switch (slot) {
-      case "morning": return "09:00";
-      case "afternoon": return "14:00";
-      case "evening": return "19:00";
-      default: return "12:00";
-    }
-  };
+  switch (slot) {
+    case "morning": return "09:00";
+    case "afternoon": return "14:00";
+    case "evening": return "19:00";
+    case "custom": return customStartTime || "12:00";
+    default: return "12:00";
+  }
+};
+
 
   const addActivity = (activity, day, timeSlot) => {
+    const startTime =  getDefaultTime(timeSlot);
+    const endTime =  getDefaultEndTime(startTime, activity.estimatedTime);
+
     const newItem = {
       id: generateUniqueId(),
       activity,
       day,
       timeSlot,
-      startTime: getDefaultTime(timeSlot),
+      startTime,
+      endTime,
       mood: "happy",
       notes: "",
     };
+
     setScheduleItems(prev => [...prev, newItem]);
     setShowActivityBrowser(false);
     setSelectedSlot(null);
   };
+
 
   const addActivityToSlot = (day, timeSlot) => {
     setSelectedSlot({ day, timeSlot });
