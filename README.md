@@ -7,13 +7,13 @@
 
 ## 🚀 Live Demo  
 Check out the working application here:  
-**[Deployment Link](https://weekend-planner-nine.vercel.app/)**
+**[Deployment Link](https://weekendly-eight.vercel.app/)**
 
 ---
 
 ## 🎥 Video Walkthrough  
 Watch a detailed explanation of the app, its features, and engineering decisions:  
-**[Video Explanation Link](https://your-video-link.com/)**
+**[Video Explanation Link](https://drive.google.com/file/d/1CqU7roK67U1IReQv3A6x9NxRYh0F89Vp/view?pli=1)**
 
 ---
 
@@ -68,17 +68,6 @@ Watch a detailed explanation of the app, its features, and engineering decisions
 
 ## 📂 Folder Structure (Next.js Best Practices)
 
-```
-/app
-/components
-/hooks
-/services
-/utils
-/public
-/styles
-/tests
-```
-
 - Modular, reusable components
 - Clean separation of concerns
 - Scalable for future extensions
@@ -94,7 +83,7 @@ Watch a detailed explanation of the app, its features, and engineering decisions
 ### Installation
 ```bash
 git clone https://github.com/your-username/weekendly.git
-cd weekendly
+cd planner
 npm install
 npm run dev
 ```

@@ -8,6 +8,14 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
   const [generating, setGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
+  function escapeXML(text) {
+    return text.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&apos;");
+  }
+
   
   const generateCanvasPoster = async () => {
     setGenerating(true);
@@ -284,10 +292,10 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
               ${item.activity?.icon || '📅'}
             </text>
             <text x="140" y="${yPos - 8}" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1a1a1a">
-              ${item.activity?.name || 'Activity'}
+              ${escapeXML(item.activity?.name || 'Activity')}
             </text>
             <text x="140" y="${yPos + 15}" font-family="Arial, sans-serif" font-size="15" fill="#6b7280">
-              ${(item.activity?.description || 'No description').substring(0, 50)}
+              ${escapeXML((item.activity?.description || 'No description').substring(0, 50))}
             </text>
             <rect x="600" y="${yPos - 18}" width="80" height="28" rx="14" fill="${themeColors.start}20" stroke="${themeColors.start}"/>
             <text x="640" y="${yPos - 1}" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#374151">
@@ -357,218 +365,8 @@ const PosterGenerator = ({ scheduleItems, theme, planName }) => {
   };
 
   
-  const generatePrintHTML = async () => {
-    setGenerating(true);
-    try {
-      const themeColors = getThemeGradientColors();
-      const groupedByDay = scheduleItems.reduce((acc, item) => {
-        if (!acc[item.day]) acc[item.day] = [];
-        acc[item.day].push(item);
-        return acc;
-      }, {});
 
-      let activitiesHTML = '';
-      Object.entries(groupedByDay).forEach(([day, items]) => {
-        activitiesHTML += `
-          <div class="day-section">
-            <h2 class="day-header">${day.charAt(0).toUpperCase() + day.slice(1)}</h2>
-            <div class="activities">
-        `;
-        
-        items.sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
-          activitiesHTML += `
-            <div class="activity-card">
-              <div class="activity-icon">${item.activity?.icon || '📅'}</div>
-              <div class="activity-content">
-                <h3 class="activity-name">${item.activity?.name || 'Activity'}</h3>
-                <p class="activity-description">${item.activity?.description || 'No description'}</p>
-              </div>
-              <div class="activity-time">${item.startTime || '00:00'}</div>
-            </div>
-          `;
-        });
-        
-        activitiesHTML += `
-            </div>
-          </div>
-        `;
-      });
-
-      const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${planName || "My Weekend Plan"} - Poster</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            background: ${getThemeColor()};
-            width: 800px;
-            height: 1200px;
-            position: relative;
-            overflow: hidden;
-        }
-        .header {
-            height: 300px;
-            background: linear-gradient(135deg, ${themeColors.start} 0%, ${themeColors.end} 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 60px;
-        }
-        .title {
-            font-size: 42px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        .theme-badge {
-            background: rgba(255,255,255,0.25);
-            padding: 15px 30px;
-            border-radius: 15px;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .content {
-            padding: 60px;
-            padding-top: 40px;
-        }
-        .day-section {
-            margin-bottom: 40px;
-        }
-        .day-header {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1a1a1a;
-            margin-bottom: 20px;
-            text-transform: capitalize;
-            border-bottom: 4px solid ${themeColors.start};
-            padding-bottom: 10px;
-            display: inline-block;
-            min-width: 240px;
-        }
-        .activities {
-            display: grid;
-            gap: 15px;
-        }
-        .activity-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .activity-icon {
-            font-size: 32px;
-            min-width: 50px;
-            text-align: center;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .activity-content {
-            flex: 1;
-        }
-        .activity-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-        .activity-description {
-            font-size: 14px;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-        .activity-time {
-            background: linear-gradient(135deg, ${themeColors.start}20, ${themeColors.end}20);
-            border: 1px solid ${themeColors.start};
-            border-radius: 10px;
-            padding: 8px 15px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #374151;
-        }
-        .footer {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-        }
-        .footer::before {
-            content: '';
-            display: block;
-            width: 200px;
-            height: 2px;
-            background: ${themeColors.start};
-            margin: 0 auto 10px;
-        }
-        .footer p {
-            font-size: 16px;
-            color: #9ca3af;
-            font-weight: 500;
-        }
-        @media print {
-            body { width: 8.5in; height: 11in; }
-            .header { height: 3in; }
-            .content { padding: 0.5in; }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1 class="title">${planName || "My Weekend Plan"}</h1>
-        <div class="theme-badge">${theme} Theme</div>
-    </div>
-    
-    <div class="content">
-        ${activitiesHTML}
-    </div>
-    
-    <div class="footer">
-        <p>Created with Weekendly</p>
-    </div>
-</body>
-</html>
-      `;
-
-      
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.download = `${(planName || "weekend-plan").replace(/[^a-z0-9]/gi, '-').toLowerCase()}-poster.html`;
-      link.href = url;
-      link.click();
-      URL.revokeObjectURL(url);
-
-      toast.success("HTML poster generated! Open in browser and use Ctrl+P to print.");
-    } catch (error) {
-      console.error("HTML generation failed:", error);
-      toast.error("Failed to generate HTML: " + error.message);
-    } finally {
-      setGenerating(false);
-    }
-  };
+  
 
   const getThemeColor = () => {
     switch (theme) {
