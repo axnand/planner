@@ -132,28 +132,3 @@ npm test
 
 ---
 
-## 📢 Contribute / Feedback
-
-Feel free to fork the repository, suggest improvements, or report issues. Weekendly is built to be open, intuitive, and user-focused — your contributions are welcome!
-
----
-
-## 📜 License
-
-MIT License
-
----
-
-Thank you for checking out **Weekendly**! ✨ Plan smarter, explore nearby spots, and make every weekend count.
-
----
-
-### ✅ Notes:
-1. Replace placeholders like `https://your-deployment-url.vercel.app/`, `https://your-video-link.com/`, and your GitHub URL before publishing.
-2. Fill in the state management method you used.
-3. Optionally include screenshots or GIFs in the README if you want it to be even more visually appealing.
-
-**Want to enhance this README further?**
-- Add markdown badges (like Vercel, Netlify, or license badges)
-- Include example screenshots
-- Fill in all the placeholder links once available
