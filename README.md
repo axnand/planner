@@ -1,4 +1,5 @@
-# Weekendly 🌟
+# Weekendly <img src="./public/logo.png" alt="Weekendly Logo" width="32" style="vertical-align: middle;" />
+
 
 **Weekendly** is an interactive, intelligent, and visually engaging web application that helps users plan their weekends — or even long weekends — in an easy, fun, and personalized way. Built using **Next.js**, **shadcn/ui**, and integrated with multiple external APIs, Weekendly offers a seamless experience with smart recommendations, offline access, and export options.
 
